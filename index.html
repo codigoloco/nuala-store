@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="NUALA - Lencería exclusiva de dama y caballero. Diseños delicados y confort premium con envíos a todo el país. RIF: J505814567.">
+    <title>NUALA | Ropa Íntima de Dama y Caballero</title>
+    <!-- Favicon SVG integrado -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+    <!-- Google Fonts con display=swap para evitar bloqueo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Montserrat:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Iconos minimalistas -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cropper.js CSS para Recorte Visual -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <!-- Estilos vanilla personalizados -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+    <!-- Contenedor para Notificaciones Toast Flotantes -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Header / Barra de Navegación -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand-logo-container">
+                <a href="#" class="brand-logo" id="brand-logo">NUALA</a>
+                <span class="brand-slogan">ESTILO QUE ENAMORA</span>
+            </div>
+            <nav class="nav-menu" id="nav-menu">
+                <a href="#hero-scene" class="nav-link active">Colección</a>
+                <a href="#stats-scene" class="nav-link">Nosotros</a>
+                <a href="#locations-scene" class="nav-link">Tiendas</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Escena 1: Home y Carrusel de Ropa Íntima -->
+    <section class="scene-section hero-scene active-scene" id="hero-scene">
+        <div class="hero-content scroll-reveal">
+            <span class="hero-subtitle" id="hero-subtitle">Colección Exclusiva</span>
+            <h1 class="hero-title" id="hero-title">El arte de la intimidad</h1>
+            <p class="hero-description" id="hero-description">Siluetas delicadas diseñadas para abrazar tu esencia.
+                Confort y sofisticación en armonía perfecta para dama y caballero.</p>
+            <div class="hero-cta-container">
+                <a href="#hero-scene" class="btn btn-primary" id="btn-shop-women">Colección Ella</a>
+                <a href="#hero-scene" class="btn btn-secondary" id="btn-shop-men">Colección Él</a>
+            </div>
+        </div>
+
+        <!-- Carrusel de Ropa Íntima -->
+        <div class="carousel-container scroll-reveal delay-1" id="products-carousel">
+            <div class="carousel-wrapper" id="products-wrapper">
+                <!-- Se inyectarán dinámicamente mediante JS (View) -->
+            </div>
+
+            <!-- Controles del carrusel -->
+            <button class="carousel-control prev" id="products-prev" aria-label="Anterior"><i
+                    class="fa-solid fa-chevron-left"></i></button>
+            <button class="carousel-control next" id="products-next" aria-label="Siguiente"><i
+                    class="fa-solid fa-chevron-right"></i></button>
+
+            <!-- Indicadores -->
+            <div class="carousel-indicators" id="products-indicators"></div>
+        </div>
+    </section>
+
+    <!-- Escena 2: Expansión Nacional -->
+    <section class="scene-section stats-scene" id="stats-scene">
+        <div class="stats-background" id="stats-bg"></div>
+        <div class="stats-content scroll-reveal">
+            <p class="stats-tagline">Cerca de ti</p>
+            <h2 class="stats-number" id="stats-main-number">+30</h2>
+            <h3 class="stats-heading">Tiendas en todo el país</h3>
+            <p class="stats-text">Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu
+                boutique más cercana y vive una experiencia de compra personalizada.</p>
+            <a href="#locations-scene" class="btn btn-primary" id="btn-view-locations">Explorar Tiendas</a>
+        </div>
+    </section>
+
+    <!-- Escena 3: Ubicaciones e Información de Tiendas -->
+    <section class="scene-section locations-scene" id="locations-scene">
+        <!-- Cabecera de la sección agrupada (Flex) -->
+        <div class="locations-header scroll-reveal">
+            <div class="locations-content">
+                <span class="locations-subtitle">Presencia Nacional</span>
+                <h2 class="locations-title">Nuestras Boutiques</h2>
+                <p class="locations-description">Visítanos y déjate asesorar por nuestros especialistas en moda íntima.
+                </p>
+            </div>
+
+            <!-- Controles del carrusel de tiendas reubicados arriba a la derecha -->
+            <div class="locations-header-controls">
+                <button class="carousel-header-btn prev" id="stores-prev" aria-label="Anterior"><i
+                        class="fa-solid fa-chevron-left"></i></button>
+                <button class="carousel-header-btn next" id="stores-next" aria-label="Siguiente"><i
+                        class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Barra de Filtros Dinámicos por Estado -->
+        <div class="locations-filter-bar scroll-reveal delay-1" id="locations-filter-bar">
+            <!-- Se inyectará dinámicamente mediante JS (View) -->
+        </div>
+
+        <!-- Carrusel de Tiendas -->
+        <div class="carousel-container locations-carousel scroll-reveal delay-2" id="stores-carousel">
+            <div class="carousel-wrapper" id="stores-wrapper">
+                <!-- Se inyectará dinámicamente mediante JS (View) -->
+            </div>
+
+            <!-- Indicadores -->
+            <div class="carousel-indicators" id="stores-indicators"></div>
+        </div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="brand-logo-container">
+                    <a href="#" class="footer-logo">NUALA</a>
+                    <span class="footer-slogan">ESTILO QUE ENAMORA</span>
+                </div>
+                <p class="footer-brand-description">Elegancia íntima, confeccionada con el corazón.</p>
+                <p class="footer-rif">RIF: J505814567</p>
+            </div>
+            <div class="footer-links">
+                <h4>Colecciones</h4>
+                <a href="#">Para Ella</a>
+                <a href="#">Para Él</a>
+                <a href="#">Novedades</a>
+            </div>
+            <div class="footer-links">
+                <h4>Compañía</h4>
+                <a href="#locations-scene">Nuestras Tiendas</a>
+                <a href="#" id="link-open-admin">Gestión de Configuración</a>
+                <a href="#">Sostenibilidad</a>
+            </div>
+            <div class="footer-social">
+                <h4>Síguenos</h4>
+                <div class="social-icons">
+                    <a href="https://instagram.com/nuala.vzla" target="_blank" aria-label="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="https://tiktok.com/@nuala.vzla" target="_blank" aria-label="TikTok"><i
+                            class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                </div>
+                <p class="social-user">@nuala.vzla</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 NUALA. Todos los derechos reservados. Diseñado con amor y delicadeza.</p>
+        </div>
+    </footer>
+
+    <!-- Ventana Modal de Autenticación de PIN ("Panel Estricto") -->
+    <div class="modal-overlay" id="admin-pin-modal">
+        <div class="modal-card pin-modal-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-lock"></i> Acceso Estricto</h2>
+                <button class="modal-close" id="btn-close-pin-modal" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="pin-instruction">Ingresa el PIN de seguridad para acceder al panel de configuración del sitio.
+                </p>
+                <form id="form-admin-pin">
+                    <div class="form-group">
+                        <label for="admin-pin-input">PIN de Seguridad</label>
+                        <input type="password" id="admin-pin-input" required placeholder="PIN por defecto: 1234"
+                            maxlength="10">
+                    </div>
+                    <button type="submit" class="btn btn-primary form-submit">Verificar PIN</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ventana Modal de Panel de Configuración Avanzado ("Hábil y Estricto") -->
+    <div class="modal-overlay" id="admin-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-sliders"></i> Panel de Configuración Estricto</h2>
+                <span class="badge-status-sqlite"><i class="fa-database fa-solid"></i> SQLite3 Conectado</span>
+                <button class="modal-close" id="btn-close-admin" aria-label="Cerrar Panel">&times;</button>
+            </div>
+
+            <!-- Pestañas administrativas -->
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="tab-btn-hero" data-tab="tab-hero"><i class="fa-solid fa-font"></i>
+                    General / Hero</button>
+                <button class="tab-btn" id="tab-btn-products" data-tab="tab-products"><i class="fa-solid fa-images"></i>
+                    Carrusel Principal</button>
+                <button class="tab-btn" id="tab-btn-stores" data-tab="tab-stores"><i class="fa-solid fa-store"></i>
+                    Tiendas y Direcciones</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Pestaña 1: Configuración de Contextos y Hero -->
+                <div class="tab-content active" id="tab-hero">
+                    <div class="admin-form-container full-width">
+                        <h3>Editar Contextos y Dimensiones del Sitio</h3>
+                        <form id="form-edit-hero" class="admin-form">
+                            <div class="form-group">
+                                <label for="hero-title-input">Título Principal (id: hero-title)</label>
+                                <input type="text" id="hero-title-input" required
+                                    placeholder="Ej. El arte de la intimidad">
+                            </div>
+                            <div class="form-group">
+                                <label for="hero-subtitle-input">Subtítulo (id: hero-subtitle)</label>
+                                <input type="text" id="hero-subtitle-input" required
+                                    placeholder="Ej. Colección Exclusiva">
+                            </div>
+                            <div class="form-group">
+                                <label for="hero-description-input">Descripción Corta (id: hero-description)</label>
+                                <textarea id="hero-description-input" rows="3" required
+                                    placeholder="Ej. Siluetas delicadas diseñadas para abrazar tu esencia..."></textarea>
+                            </div>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label for="carousel-height-input"><i class="fa-solid fa-arrows-up-down"></i> Alto
+                                        del Carrusel (px)</label>
+                                    <input type="number" id="carousel-height-input" min="300" max="900"
+                                        placeholder="Ej. 520" value="520">
+                                </div>
+                                <div class="form-group">
+                                    <label for="carousel-fit-input"><i class="fa-solid fa-expand"></i> Ajuste Uniforme
+                                        de Imagen</label>
+                                    <select id="carousel-fit-input">
+                                        <option value="cover">Cubrir al Centro (Cover - Recomendado)</option>
+                                        <option value="contain">Contener Foto Completa (Contain)</option>
+                                        <option value="fill">Estirar Imagen (Fill)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="admin-pin-change-input">Cambiar PIN de Acceso</label>
+                                <input type="password" id="admin-pin-change-input"
+                                    placeholder="Ingresa nuevo PIN para cambiarlo (opcional)">
+                            </div>
+                            <button type="submit" class="btn btn-primary form-submit"><i
+                                    class="fa-solid fa-floppy-disk"></i> Guardar Configuración General</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Pestaña 2: Gestión de Carrusel de Productos e Imágenes -->
+                <div class="tab-content" id="tab-products">
+                    <div class="admin-grid">
+                        <!-- Formulario para agregar producto al carrusel -->
+                        <div class="admin-form-container">
+                            <h3>Añadir Nueva Diapositiva</h3>
+                            <form id="form-add-product" class="admin-form">
+                                <div class="form-group">
+                                    <label for="product-name">Nombre de la Prenda</label>
+                                    <input type="text" id="product-name" required
+                                        placeholder="Ej. Body de Encaje Satinado">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-category">Categoría</label>
+                                    <select id="product-category" required>
+                                        <option value="Dama">Dama</option>
+                                        <option value="Caballero">Caballero</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-price">Precio</label>
+                                    <input type="text" id="product-price" required placeholder="Ej. $49.99">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-description">Breve Descripción</label>
+                                    <input type="text" id="product-description"
+                                        placeholder="Ej. Encaje elástico ultra confortable">
+                                </div>
+                                <div class="form-group">
+                                    <label>Imagen de la Prenda</label>
+                                    <div class="upload-options-container">
+                                        <label for="product-image-file" class="file-select-label"><i
+                                                class="fa-solid fa-crop-simple"></i> Cortar y Subir Foto del
+                                            Dispositivo</label>
+                                        <input type="file" id="product-image-file" class="file-input-hidden"
+                                            accept="image/*">
+                                        <span class="upload-or-divider">o ingresa la URL:</span>
+                                        <input type="text" id="product-image" required
+                                            placeholder="Ej. assets/images/lenceria-femenina.webp"
+                                            value="assets/images/lenceria-femenina.webp">
+                                    </div>
+                                </div>
+                                <div class="image-preview-container">
+                                    <p>Vista previa:</p>
+                                    <img id="product-image-preview" src="assets/images/lenceria-femenina.webp"
+                                        alt="Vista previa">
+                                </div>
+                                <button type="submit" class="btn btn-primary form-submit"><i
+                                        class="fa-solid fa-plus"></i> Añadir al Carrusel</button>
+                            </form>
+                        </div>
+                        <!-- Lista de productos para editar/eliminar -->
+                        <div class="admin-list-container">
+                            <h3>Diapositivas del Carrusel Registradas</h3>
+                            <div class="admin-items-list" id="admin-products-list">
+                                <!-- Cargado dinámicamente mediante JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pestaña 3: Gestión de Tiendas, Direcciones e Imágenes -->
+                <div class="tab-content" id="tab-stores">
+                    <div class="admin-grid">
+                        <!-- Formulario para agregar tienda -->
+                        <div class="admin-form-container">
+                            <h3>Agregar Nueva Tienda</h3>
+                            <form id="form-add-store" class="admin-form">
+                                <div class="form-group">
+                                    <label for="store-name">Nombre de Tienda</label>
+                                    <input type="text" id="store-name" required placeholder="Ej. NUALA Chacao">
+                                </div>
+                                <div class="form-group">
+                                    <label for="store-city">Ciudad</label>
+                                    <input type="text" id="store-city" required placeholder="Ej. Caracas">
+                                </div>
+                                <div class="form-group">
+                                    <label for="store-state">Estado (Región)</label>
+                                    <input type="text" id="store-state" required
+                                        placeholder="Ej. Distrito Capital o Zulia">
+                                </div>
+                                <div class="form-group">
+                                    <label for="store-address">Dirección Completa</label>
+                                    <input type="text" id="store-address" required
+                                        placeholder="Ej. Av. Francisco de Miranda...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="store-phone">Teléfono de Contacto</label>
+                                    <input type="text" id="store-phone" required placeholder="Ej. +58 (212) 555-4433">
+                                </div>
+                                <div class="form-group">
+                                    <label for="store-schedule">Horario</label>
+                                    <input type="text" id="store-schedule"
+                                        placeholder="Ej. Lunes a Sábado: 9:00 AM - 7:00 PM">
+                                </div>
+                                <div class="form-group">
+                                    <label>Imagen Asociada a la Tienda</label>
+                                    <div class="upload-options-container">
+                                        <label for="store-image-file" class="file-select-label"><i
+                                                class="fa-solid fa-crop-simple"></i> Cortar y Subir Foto del
+                                            Dispositivo</label>
+                                        <input type="file" id="store-image-file" class="file-input-hidden"
+                                            accept="image/*">
+                                        <span class="upload-or-divider">o ingresa la URL:</span>
+                                        <input type="text" id="store-image" required
+                                            placeholder="Ej. assets/images/tienda-nuala.webp"
+                                            value="assets/images/tienda-nuala.webp">
+                                    </div>
+                                </div>
+                                <div class="image-preview-container">
+                                    <p>Vista previa de la tienda:</p>
+                                    <img id="store-image-preview" src="assets/images/tienda-nuala.webp"
+                                        alt="Vista previa tienda">
+                                </div>
+                                <button type="submit" class="btn btn-primary form-submit"><i
+                                        class="fa-solid fa-store"></i> Guardar Tienda</button>
+                            </form>
+                        </div>
+                        <!-- Lista de tiendas para editar direcciones/imágenes y eliminar -->
+                        <div class="admin-list-container">
+                            <h3>Tiendas Físicas Registradas</h3>
+                            <div class="admin-items-list" id="admin-stores-list">
+                                <!-- Cargado dinámicamente mediante JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Secundario: Editar Prenda / Diapositiva -->
+    <div class="modal-overlay" id="edit-product-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-pen-to-square"></i> Editar Prenda del Carrusel</h2>
+                <button class="modal-close" id="btn-close-edit-product" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-product" class="admin-form">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="form-group">
+                        <label for="edit-product-name">Nombre de la Prenda</label>
+                        <input type="text" id="edit-product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-category">Categoría</label>
+                        <select id="edit-product-category" required>
+                            <option value="Dama">Dama</option>
+                            <option value="Caballero">Caballero</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-price">Precio</label>
+                        <input type="text" id="edit-product-price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-description">Descripción</label>
+                        <input type="text" id="edit-product-description">
+                    </div>
+                    <div class="form-group">
+                        <label>Imagen de la Prenda</label>
+                        <div class="upload-options-container">
+                            <label for="edit-product-image-file" class="file-select-label"><i
+                                    class="fa-solid fa-crop-simple"></i> Recortar Nueva Foto</label>
+                            <input type="file" id="edit-product-image-file" class="file-input-hidden" accept="image/*">
+                            <span class="upload-or-divider">o ingresa la URL:</span>
+                            <input type="text" id="edit-product-image" required>
+                        </div>
+                    </div>
+                    <div class="image-preview-container">
+                        <p>Vista previa de imagen:</p>
+                        <img id="edit-product-preview" src="" alt="Vista previa">
+                    </div>
+                    <button type="submit" class="btn btn-primary form-submit"><i class="fa-solid fa-check"></i>
+                        Actualizar Prenda</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Secundario: Editar Tienda, Dirección e Imagen -->
+    <div class="modal-overlay" id="edit-store-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-pen-to-square"></i> Editar Tienda y Dirección</h2>
+                <button class="modal-close" id="btn-close-edit-store" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-store" class="admin-form">
+                    <input type="hidden" id="edit-store-id">
+                    <div class="form-group">
+                        <label for="edit-store-name">Nombre de Tienda</label>
+                        <input type="text" id="edit-store-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-store-city">Ciudad</label>
+                        <input type="text" id="edit-store-city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-store-state">Estado (Región)</label>
+                        <input type="text" id="edit-store-state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-store-address">Dirección Completa</label>
+                        <textarea id="edit-store-address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-store-phone">Teléfono de Contacto</label>
+                        <input type="text" id="edit-store-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-store-schedule">Horario</label>
+                        <input type="text" id="edit-store-schedule">
+                    </div>
+                    <div class="form-group">
+                        <label>Imagen Asociada a la Tienda</label>
+                        <div class="upload-options-container">
+                            <label for="edit-store-image-file" class="file-select-label"><i
+                                    class="fa-solid fa-crop-simple"></i> Recortar Nueva Foto</label>
+                            <input type="file" id="edit-store-image-file" class="file-input-hidden" accept="image/*">
+                            <span class="upload-or-divider">o ingresa la URL:</span>
+                            <input type="text" id="edit-store-image" required>
+                        </div>
+                    </div>
+                    <div class="image-preview-container">
+                        <p>Vista previa de la tienda:</p>
+                        <img id="edit-store-preview" src="" alt="Vista previa tienda">
+                    </div>
+                    <button type="submit" class="btn btn-primary form-submit"><i class="fa-solid fa-check"></i>
+                        Actualizar Tienda y Dirección</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Interactivo de Recorte Visual de Imagen (Cropper.js) -->
+    <div class="modal-overlay" id="crop-image-modal">
+        <div class="modal-card crop-modal-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-crop-simple"></i> Seleccionar Área a Recortar</h2>
+                <button class="modal-close" id="btn-close-crop-modal" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="crop-instruction">Arrastra los bordes para seleccionar exactamente cómo se verá la imagen en
+                    el carrusel.</p>
+                <div class="crop-container">
+                    <img id="cropper-target-image" src="" alt="Imagen a recortar">
+                </div>
+                <div class="crop-toolbar">
+                    <button type="button" class="btn-crop-tool" id="btn-crop-zoom-in" title="Acercar"><i
+                            class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button type="button" class="btn-crop-tool" id="btn-crop-zoom-out" title="Alejar"><i
+                            class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button type="button" class="btn-crop-tool" id="btn-crop-rotate-left" title="Rotar Izquierda 90°"><i
+                            class="fa-solid fa-rotate-left"></i></button>
+                    <button type="button" class="btn-crop-tool" id="btn-crop-rotate-right" title="Rotar Derecha 90°"><i
+                            class="fa-solid fa-rotate-right"></i></button>
+                    <button type="button" class="btn-crop-tool" id="btn-crop-reset" title="Reiniciar Selección"><i
+                            class="fa-solid fa-arrows-rotate"></i></button>
+                </div>
+                <button type="button" class="btn btn-primary form-submit" id="btn-apply-crop"><i
+                        class="fa-solid fa-check"></i> Aplicar Recorte y Subir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librería Cropper.js JavaScript diferida para inicio veloz -->
+    <!-- Tracker de Analítica Web y Heatmap de Clics -->
+    <script src="js/tracker.js"></script>
+
+    <!-- Controlador Principal -->
+    <script type="module" src="assets/js/controller.js"></script>
+</body>
+
+</html>
