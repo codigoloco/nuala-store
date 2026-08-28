@@ -663,7 +663,9 @@ button {
 /* Carrusel de Tiendas/Ubicaciones */
 .locations-carousel {
     max-width: 1000px;
-    height: 420px;
+    height: auto;
+    min-height: 480px;
+    padding: 10px 0 30px 0;
     overflow: hidden;
     background: transparent;
     box-shadow: none;
@@ -748,14 +750,20 @@ button {
     line-height: 1.5;
 }
 
+.store-bottom-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 15px;
+}
+
 .store-contact {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     font-size: 0.8rem;
     color: var(--color-text-main);
-    border-top: 1px solid var(--color-border);
-    padding-top: 15px;
     font-family: var(--font-complementary);
 }
 
@@ -767,6 +775,146 @@ button {
 
 .store-contact i {
     color: var(--color-primary-dark);
+    width: 14px;
+    text-align: center;
+}
+
+/* Acciones y Botones Sociales de la Tienda */
+.store-social-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.btn-store-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 25px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    font-family: var(--font-complementary);
+    letter-spacing: 0.3px;
+}
+
+.btn-store-whatsapp {
+    background: #25D366;
+    color: #ffffff !important;
+    border: 1px solid rgba(37, 211, 102, 0.2);
+}
+
+.btn-store-whatsapp:hover {
+    background: #20BA56;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+    color: #ffffff !important;
+}
+
+.btn-store-whatsapp i {
+    font-size: 1.1rem;
+}
+
+.btn-store-instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: #ffffff !important;
+    border: none;
+}
+
+.btn-store-instagram:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 39, 67, 0.35);
+    filter: brightness(1.05);
+    color: #ffffff !important;
+}
+
+.btn-store-instagram i {
+    font-size: 1rem;
+}
+
+/* Badges en lista administrativa de tiendas */
+.admin-social-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.admin-social-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    font-family: var(--font-complementary);
+}
+
+.admin-social-tag.tag-wa {
+    background: rgba(37, 211, 102, 0.12);
+    color: #1a8943;
+    border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.admin-social-tag.tag-ig {
+    background: rgba(225, 48, 108, 0.1);
+    color: #b82356;
+    border: 1px solid rgba(225, 48, 108, 0.25);
+}
+
+.admin-social-tag.tag-disabled {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-muted);
+    border: 1px dashed var(--color-border);
+    opacity: 0.7;
+}
+
+/* Toggle Checkbox en Formularios Administrativos */
+.form-label-with-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.form-label-with-toggle label {
+    margin-bottom: 0 !important;
+}
+
+.toggle-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    user-select: none;
+    background: var(--color-bg);
+    padding: 3px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    transition: var(--transition-fast);
+    font-family: var(--font-complementary);
+}
+
+.toggle-checkbox-label:hover {
+    color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+}
+
+.toggle-checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: var(--color-primary);
+    width: 14px;
+    height: 14px;
+    margin: 0;
 }
 
 /* Sobrescribir indicadores y controles para el carrusel de ubicaciones */

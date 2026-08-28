@@ -128,6 +128,40 @@ export class CarouselComponent {
 }
 
 /**
+ * Helper para formatear y construir el enlace de WhatsApp.
+ * Si es número telefónico, elimina caracteres no numéricos y antepone código de país si es necesario.
+ */
+export function buildWhatsappUrl(phoneOrUrl) {
+    if (!phoneOrUrl) return '';
+    const trimmed = phoneOrUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return trimmed;
+    }
+    const numeric = trimmed.replace(/\D/g, '');
+    if (!numeric) return '';
+    let fullNumber = numeric;
+    if (numeric.startsWith('0')) {
+        fullNumber = '58' + numeric.substring(1);
+    } else if (!numeric.startsWith('58') && numeric.length === 10) {
+        fullNumber = '58' + numeric;
+    }
+    return `https://wa.me/${fullNumber}`;
+}
+
+/**
+ * Helper para formatear y construir el enlace de Instagram.
+ */
+export function buildInstagramUrl(userOrUrl) {
+    if (!userOrUrl) return '';
+    const trimmed = userOrUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return trimmed;
+    }
+    const cleanUser = trimmed.replace(/^@/, '');
+    return `https://instagram.com/${cleanUser}`;
+}
+
+/**
  * Clase NualaView - Gestiona el DOM, renderizado de plantillas, modales y recorte con Cropper.js.
  * Sigue los principios SOLID y utiliza camelCase para variables JavaScript.
  */
@@ -287,6 +321,31 @@ export class NualaView {
             card.className = 'store-card';
             card.style.animationDelay = `${idx * 0.08}s`;
             const storeImgPath = store.image || 'assets/images/tienda-nuala.webp';
+            const whatsappUrl = buildWhatsappUrl(store.whatsapp || store.phone);
+            const instagramUrl = buildInstagramUrl(store.instagram);
+
+            const isWhatsappActive = store.whatsapp_active === undefined || store.whatsapp_active === null || parseInt(store.whatsapp_active) === 1;
+            const isInstagramActive = store.instagram_active === undefined || store.instagram_active === null || parseInt(store.instagram_active) === 1;
+
+            let socialButtonsHtml = '';
+            if (isWhatsappActive && whatsappUrl) {
+                socialButtonsHtml += `
+                    <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-store-social btn-store-whatsapp" title="Whatsapp de la tienda aqui">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Whatsapp de la tienda aqui</span>
+                    </a>
+                `;
+            }
+
+            if (isInstagramActive && instagramUrl) {
+                socialButtonsHtml += `
+                    <a href="${instagramUrl}" target="_blank" rel="noopener noreferrer" class="btn-store-social btn-store-instagram" title="Instagram de la tienda">
+                        <i class="fa-brands fa-instagram"></i>
+                        <span>Instagram de la tienda</span>
+                    </a>
+                `;
+            }
+
             card.innerHTML = `
                 <div class="store-image">
                     <img src="${storeImgPath}" alt="${store.name}" loading="eager" onerror="this.onerror=null; this.src='assets/images/tienda-nuala.webp';">
@@ -297,9 +356,12 @@ export class NualaView {
                         <h3 class="store-name">${store.name}</h3>
                         <p class="store-address">${store.address}</p>
                     </div>
-                    <div class="store-contact">
-                        <span><i class="fa-solid fa-phone"></i> ${store.phone}</span>
-                        <span><i class="fa-regular fa-clock"></i> ${store.schedule}</span>
+                    <div class="store-bottom-section">
+                        <div class="store-contact">
+                            <span><i class="fa-solid fa-phone"></i> ${store.phone}</span>
+                            <span><i class="fa-regular fa-clock"></i> ${store.schedule}</span>
+                        </div>
+                        ${socialButtonsHtml ? `<div class="store-social-actions">${socialButtonsHtml}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -356,6 +418,24 @@ export class NualaView {
             const row = document.createElement('div');
             row.className = 'admin-item-row';
             const thumbImg = store.image || 'assets/images/tienda-nuala.webp';
+            const whatsappUrl = buildWhatsappUrl(store.whatsapp);
+            const instagramUrl = buildInstagramUrl(store.instagram);
+
+            const isWhatsappActive = store.whatsapp_active === undefined || store.whatsapp_active === null || parseInt(store.whatsapp_active) === 1;
+            const isInstagramActive = store.instagram_active === undefined || store.instagram_active === null || parseInt(store.instagram_active) === 1;
+
+            let socialTagsHtml = '';
+            if (whatsappUrl) {
+                const statusClass = isWhatsappActive ? 'tag-wa' : 'tag-disabled';
+                const statusText = isWhatsappActive ? '' : ' (Desactivado)';
+                socialTagsHtml += `<span class="admin-social-tag ${statusClass}" title="WhatsApp: ${store.whatsapp}${statusText}"><i class="fa-brands fa-whatsapp"></i> ${store.whatsapp}${statusText}</span>`;
+            }
+            if (instagramUrl) {
+                const statusClass = isInstagramActive ? 'tag-ig' : 'tag-disabled';
+                const statusText = isInstagramActive ? '' : ' (Desactivado)';
+                socialTagsHtml += `<span class="admin-social-tag ${statusClass}" title="Instagram: ${store.instagram}${statusText}"><i class="fa-brands fa-instagram"></i> ${store.instagram}${statusText}</span>`;
+            }
+
             row.innerHTML = `
                 <div class="admin-item-thumb">
                     <img src="${thumbImg}" alt="${store.name}" onerror="this.onerror=null; this.src='assets/images/tienda-nuala.webp';">
@@ -364,6 +444,7 @@ export class NualaView {
                     <h4>${store.name}</h4>
                     <p class="admin-item-sub">${store.city} (${store.state}) - ${store.phone}</p>
                     <p class="admin-item-addr"><i class="fa-solid fa-location-dot"></i> ${store.address}</p>
+                    ${socialTagsHtml ? `<div class="admin-social-tags-container">${socialTagsHtml}</div>` : ''}
                 </div>
                 <div class="admin-item-actions">
                     <button class="admin-action-btn btn-edit-store" data-id="${store.id}" title="Editar tienda y dirección">
@@ -569,6 +650,19 @@ export class NualaView {
         document.getElementById('edit-store-state').value = store.state;
         document.getElementById('edit-store-address').value = store.address;
         document.getElementById('edit-store-phone').value = store.phone;
+        document.getElementById('edit-store-whatsapp').value = store.whatsapp || '';
+        document.getElementById('edit-store-instagram').value = store.instagram || '';
+        
+        const waActiveCheck = document.getElementById('edit-store-whatsapp-active');
+        if (waActiveCheck) {
+            waActiveCheck.checked = store.whatsapp_active === undefined || store.whatsapp_active === null || parseInt(store.whatsapp_active) === 1;
+        }
+
+        const igActiveCheck = document.getElementById('edit-store-instagram-active');
+        if (igActiveCheck) {
+            igActiveCheck.checked = store.instagram_active === undefined || store.instagram_active === null || parseInt(store.instagram_active) === 1;
+        }
+
         document.getElementById('edit-store-schedule').value = store.schedule || '';
         document.getElementById('edit-store-image').value = store.image;
         

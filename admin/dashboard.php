@@ -291,9 +291,19 @@ $total_visits_count = get_total_unique_visits();
         .heatmap-viewport {
             position: relative;
             width: 100%;
-            height: 750px;
-            overflow: auto;
+            height: 80vh;
+            min-height: 650px;
+            overflow-y: auto;
+            overflow-x: hidden;
             background: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        .heatmap-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 100%;
+            transform-origin: top left;
         }
 
         .site-preview-frame {
@@ -301,9 +311,11 @@ $total_visits_count = get_total_unique_visits();
             top: 0;
             left: 0;
             width: 100%;
-            height: 1200px;
+            height: 100%;
             border: none;
             pointer-events: none;
+            display: block;
+            overflow: hidden;
         }
 
         .heatmap-area {
@@ -311,7 +323,7 @@ $total_visits_count = get_total_unique_visits();
             top: 0;
             left: 0;
             width: 100%;
-            height: 1200px;
+            height: 100%;
             pointer-events: none;
             z-index: 10;
         }
@@ -406,8 +418,10 @@ $total_visits_count = get_total_unique_visits();
                 <span id="stat-current-url">Cargando...</span>
             </div>
             <div class="heatmap-viewport" id="heatmap-viewport">
-                <iframe id="site-preview-frame" class="site-preview-frame" src="../index.php"></iframe>
-                <div class="heatmap-area" id="heatmap-area"></div>
+                <div class="heatmap-wrapper" id="heatmap-wrapper">
+                    <iframe id="site-preview-frame" class="site-preview-frame" src="../index.php" scrolling="no"></iframe>
+                    <div class="heatmap-area" id="heatmap-area"></div>
+                </div>
             </div>
         </section>
 

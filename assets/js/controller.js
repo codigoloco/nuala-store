@@ -318,12 +318,19 @@ class NualaController {
         if (formAddStore) {
             formAddStore.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const waActiveInput = document.getElementById('store-whatsapp-active');
+                const igActiveInput = document.getElementById('store-instagram-active');
+
                 const newStoreData = {
                     name: document.getElementById('store-name').value.trim(),
                     city: document.getElementById('store-city').value.trim(),
                     state: document.getElementById('store-state').value.trim(),
                     address: document.getElementById('store-address').value.trim(),
                     phone: document.getElementById('store-phone').value.trim(),
+                    whatsapp: document.getElementById('store-whatsapp') ? document.getElementById('store-whatsapp').value.trim() : '',
+                    whatsapp_active: waActiveInput ? (waActiveInput.checked ? 1 : 0) : 1,
+                    instagram: document.getElementById('store-instagram') ? document.getElementById('store-instagram').value.trim() : '',
+                    instagram_active: igActiveInput ? (igActiveInput.checked ? 1 : 0) : 1,
                     schedule: document.getElementById('store-schedule').value.trim(),
                     image: document.getElementById('store-image').value.trim()
                 };
@@ -332,6 +339,8 @@ class NualaController {
                 this.refreshFilterBar();
                 this.refreshStoresData();
                 formAddStore.reset();
+                if (waActiveInput) waActiveInput.checked = true;
+                if (igActiveInput) igActiveInput.checked = true;
                 document.getElementById('store-image').value = 'assets/images/tienda-nuala.webp';
                 document.getElementById('store-image-preview').src = 'assets/images/tienda-nuala.webp';
                 this.view.showToast('Tienda registrada exitosamente.', 'success');
@@ -475,12 +484,19 @@ class NualaController {
             formEditStore.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const storeId = document.getElementById('edit-store-id').value;
+                const waActiveInput = document.getElementById('edit-store-whatsapp-active');
+                const igActiveInput = document.getElementById('edit-store-instagram-active');
+
                 const updatedData = {
                     name: document.getElementById('edit-store-name').value.trim(),
                     city: document.getElementById('edit-store-city').value.trim(),
                     state: document.getElementById('edit-store-state').value.trim(),
                     address: document.getElementById('edit-store-address').value.trim(),
                     phone: document.getElementById('edit-store-phone').value.trim(),
+                    whatsapp: document.getElementById('edit-store-whatsapp') ? document.getElementById('edit-store-whatsapp').value.trim() : '',
+                    whatsapp_active: waActiveInput ? (waActiveInput.checked ? 1 : 0) : 1,
+                    instagram: document.getElementById('edit-store-instagram') ? document.getElementById('edit-store-instagram').value.trim() : '',
+                    instagram_active: igActiveInput ? (igActiveInput.checked ? 1 : 0) : 1,
                     schedule: document.getElementById('edit-store-schedule').value.trim(),
                     image: document.getElementById('edit-store-image').value.trim()
                 };

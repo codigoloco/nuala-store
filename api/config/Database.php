@@ -75,9 +75,36 @@ class Database {
                 phone TEXT NOT NULL,
                 schedule TEXT NOT NULL,
                 image TEXT NOT NULL,
+                whatsapp TEXT DEFAULT '',
+                whatsapp_active INTEGER DEFAULT 1,
+                instagram TEXT DEFAULT '',
+                instagram_active INTEGER DEFAULT 1,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        // Migración automática de columnas whatsapp, instagram, whatsapp_active e instagram_active si no existen
+        try {
+            $columns_stmt = $this->pdo->query("PRAGMA table_info(stores)");
+            $existing_columns = [];
+            while ($col = $columns_stmt->fetch()) {
+                $existing_columns[] = strtolower($col['name']);
+            }
+            if (!in_array('whatsapp', $existing_columns)) {
+                $this->pdo->exec("ALTER TABLE stores ADD COLUMN whatsapp TEXT DEFAULT ''");
+            }
+            if (!in_array('whatsapp_active', $existing_columns)) {
+                $this->pdo->exec("ALTER TABLE stores ADD COLUMN whatsapp_active INTEGER DEFAULT 1");
+            }
+            if (!in_array('instagram', $existing_columns)) {
+                $this->pdo->exec("ALTER TABLE stores ADD COLUMN instagram TEXT DEFAULT ''");
+            }
+            if (!in_array('instagram_active', $existing_columns)) {
+                $this->pdo->exec("ALTER TABLE stores ADD COLUMN instagram_active INTEGER DEFAULT 1");
+            }
+        } catch (Exception $e) {
+            // Silencioso si falla la verificación
+        }
 
         $this->seed_default_data_once();
     }

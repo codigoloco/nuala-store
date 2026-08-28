@@ -47,7 +47,11 @@ export class NualaModel {
                         address: s.address,
                         phone: s.phone,
                         schedule: s.schedule,
-                        image: s.image
+                        image: s.image,
+                        whatsapp: s.whatsapp || '',
+                        whatsapp_active: s.whatsapp_active !== undefined && s.whatsapp_active !== null ? parseInt(s.whatsapp_active) : 1,
+                        instagram: s.instagram || '',
+                        instagram_active: s.instagram_active !== undefined && s.instagram_active !== null ? parseInt(s.instagram_active) : 1
                     })) : [];
 
                     this.syncLocalStorage();
@@ -390,7 +394,11 @@ export class NualaModel {
             address: storeData.address,
             phone: storeData.phone,
             schedule: storeData.schedule || "Lunes a Sábado: 9:00 AM - 7:00 PM",
-            image: storeData.image || "assets/images/tienda-nuala.jpg"
+            image: storeData.image || "assets/images/tienda-nuala.jpg",
+            whatsapp: storeData.whatsapp || "",
+            whatsapp_active: storeData.whatsapp_active !== undefined ? parseInt(storeData.whatsapp_active) : 1,
+            instagram: storeData.instagram || "",
+            instagram_active: storeData.instagram_active !== undefined ? parseInt(storeData.instagram_active) : 1
         };
         this.stores.push(newStore);
         this.syncLocalStorage();

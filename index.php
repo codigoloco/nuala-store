@@ -359,6 +359,26 @@ $total_unique_visits = get_total_unique_visits();
                                     <input type="text" id="store-phone" required placeholder="Ej. +58 (212) 555-4433">
                                 </div>
                                 <div class="form-group">
+                                    <div class="form-label-with-toggle">
+                                        <label for="store-whatsapp"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp de la Tienda</label>
+                                        <label class="toggle-checkbox-label" title="Activar o desactivar botón de WhatsApp en la ficha">
+                                            <input type="checkbox" id="store-whatsapp-active" checked>
+                                            <span>Mostrar Botón</span>
+                                        </label>
+                                    </div>
+                                    <input type="text" id="store-whatsapp" placeholder="Ej. 04121234567 o +58 412 1234567">
+                                </div>
+                                <div class="form-group">
+                                    <div class="form-label-with-toggle">
+                                        <label for="store-instagram"><i class="fa-brands fa-instagram" style="color: #E1306C;"></i> Instagram de la Tienda</label>
+                                        <label class="toggle-checkbox-label" title="Activar o desactivar botón de Instagram en la ficha">
+                                            <input type="checkbox" id="store-instagram-active" checked>
+                                            <span>Mostrar Botón</span>
+                                        </label>
+                                    </div>
+                                    <input type="text" id="store-instagram" placeholder="Ej. @nualaboutique o nualaboutique">
+                                </div>
+                                <div class="form-group">
                                     <label for="store-schedule">Horario</label>
                                     <input type="text" id="store-schedule"
                                         placeholder="Ej. Lunes a Sábado: 9:00 AM - 7:00 PM">
@@ -475,6 +495,26 @@ $total_unique_visits = get_total_unique_visits();
                     <div class="form-group">
                         <label for="edit-store-phone">Teléfono de Contacto</label>
                         <input type="text" id="edit-store-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label-with-toggle">
+                            <label for="edit-store-whatsapp"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp de la Tienda</label>
+                            <label class="toggle-checkbox-label" title="Activar o desactivar botón de WhatsApp en la ficha">
+                                <input type="checkbox" id="edit-store-whatsapp-active" checked>
+                                <span>Mostrar Botón</span>
+                            </label>
+                        </div>
+                        <input type="text" id="edit-store-whatsapp" placeholder="Ej. 04121234567 o +58 412 1234567">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label-with-toggle">
+                            <label for="edit-store-instagram"><i class="fa-brands fa-instagram" style="color: #E1306C;"></i> Instagram de la Tienda</label>
+                            <label class="toggle-checkbox-label" title="Activar o desactivar botón de Instagram en la ficha">
+                                <input type="checkbox" id="edit-store-instagram-active" checked>
+                                <span>Mostrar Botón</span>
+                            </label>
+                        </div>
+                        <input type="text" id="edit-store-instagram" placeholder="Ej. @nualaboutique o nualaboutique">
                     </div>
                     <div class="form-group">
                         <label for="edit-store-schedule">Horario</label>

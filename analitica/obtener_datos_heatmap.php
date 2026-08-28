@@ -16,17 +16,17 @@ $db_conn = get_db_connection();
 try {
     if ($filter_url !== null && $filter_url !== '' && $filter_url !== 'todas') {
         $select_stmt = $db_conn->prepare("
-            SELECT click_x, click_y, COUNT(*) AS click_density
+            SELECT click_x, click_y, viewport_width, viewport_height, COUNT(*) AS click_density
             FROM clics_heatmap
             WHERE page_url = :page_url
-            GROUP BY click_x, click_y
+            GROUP BY click_x, click_y, viewport_width, viewport_height
         ");
         $select_stmt->execute([':page_url' => $filter_url]);
     } else {
         $select_stmt = $db_conn->query("
-            SELECT click_x, click_y, COUNT(*) AS click_density
+            SELECT click_x, click_y, viewport_width, viewport_height, COUNT(*) AS click_density
             FROM clics_heatmap
-            GROUP BY click_x, click_y
+            GROUP BY click_x, click_y, viewport_width, viewport_height
         ");
     }
 
@@ -41,9 +41,10 @@ try {
         }
 
         $heatmap_data[] = [
-            'x'     => (int)$point_row['click_x'],
-            'y'     => (int)$point_row['click_y'],
-            'value' => $density_val
+            'x'              => (int)$point_row['click_x'],
+            'y'              => (int)$point_row['click_y'],
+            'viewport_width' => (int)($point_row['viewport_width'] ?? 0),
+            'value'          => $density_val
         ];
     }
 

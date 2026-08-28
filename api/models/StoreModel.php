@@ -30,12 +30,12 @@ class StoreModel {
     }
 
     /**
-     * Agrega una nueva tienda física con su dirección e imagen.
+     * Agrega una nueva tienda física con su dirección, imagen, whatsapp e instagram y sus estados activos.
      */
     public function add_store($data_store) {
         $stmt_insert = $this->db_connection->prepare("
-            INSERT INTO stores (name, city, state, address, phone, schedule, image)
-            VALUES (:name, :city, :state, :address, :phone, :schedule, :image)
+            INSERT INTO stores (name, city, state, address, phone, schedule, image, whatsapp, whatsapp_active, instagram, instagram_active)
+            VALUES (:name, :city, :state, :address, :phone, :schedule, :image, :whatsapp, :whatsapp_active, :instagram, :instagram_active)
         ");
         $stmt_insert->execute([
             ':name' => trim($data_store['name']),
@@ -44,14 +44,18 @@ class StoreModel {
             ':address' => trim($data_store['address']),
             ':phone' => trim($data_store['phone']),
             ':schedule' => isset($data_store['schedule']) && !empty($data_store['schedule']) ? trim($data_store['schedule']) : 'Lunes a Sábado: 9:00 AM - 7:00 PM',
-            ':image' => isset($data_store['image']) && !empty($data_store['image']) ? trim($data_store['image']) : 'assets/images/tienda-nuala.jpg'
+            ':image' => isset($data_store['image']) && !empty($data_store['image']) ? trim($data_store['image']) : 'assets/images/tienda-nuala.jpg',
+            ':whatsapp' => isset($data_store['whatsapp']) ? trim($data_store['whatsapp']) : '',
+            ':whatsapp_active' => isset($data_store['whatsapp_active']) ? (int)$data_store['whatsapp_active'] : 1,
+            ':instagram' => isset($data_store['instagram']) ? trim($data_store['instagram']) : '',
+            ':instagram_active' => isset($data_store['instagram_active']) ? (int)$data_store['instagram_active'] : 1
         ]);
         $new_id = (int) $this->db_connection->lastInsertId();
         return $this->get_store_by_id($new_id);
     }
 
     /**
-     * Actualiza la información de una tienda física (incluyendo dirección e imagen).
+     * Actualiza la información de una tienda física (incluyendo dirección, imagen, whatsapp e instagram y sus estados activos).
      */
     public function update_store($store_id, $data_store) {
         $stmt_update = $this->db_connection->prepare("
@@ -62,7 +66,11 @@ class StoreModel {
                 address = :address,
                 phone = :phone,
                 schedule = :schedule,
-                image = :image
+                image = :image,
+                whatsapp = :whatsapp,
+                whatsapp_active = :whatsapp_active,
+                instagram = :instagram,
+                instagram_active = :instagram_active
             WHERE id = :id
         ");
         $stmt_update->execute([
@@ -73,7 +81,11 @@ class StoreModel {
             ':address' => trim($data_store['address']),
             ':phone' => trim($data_store['phone']),
             ':schedule' => isset($data_store['schedule']) && !empty($data_store['schedule']) ? trim($data_store['schedule']) : 'Lunes a Sábado: 9:00 AM - 7:00 PM',
-            ':image' => isset($data_store['image']) && !empty($data_store['image']) ? trim($data_store['image']) : 'assets/images/tienda-nuala.jpg'
+            ':image' => isset($data_store['image']) && !empty($data_store['image']) ? trim($data_store['image']) : 'assets/images/tienda-nuala.jpg',
+            ':whatsapp' => isset($data_store['whatsapp']) ? trim($data_store['whatsapp']) : '',
+            ':whatsapp_active' => isset($data_store['whatsapp_active']) ? (int)$data_store['whatsapp_active'] : 1,
+            ':instagram' => isset($data_store['instagram']) ? trim($data_store['instagram']) : '',
+            ':instagram_active' => isset($data_store['instagram_active']) ? (int)$data_store['instagram_active'] : 1
         ]);
         return $this->get_store_by_id($store_id);
     }
