@@ -506,23 +506,51 @@ export class NualaView {
         if (!this.cropImageModal || !this.cropperTargetImage) return;
 
         this.destroyCropper();
-        this.cropperTargetImage.src = imageDataUrl;
 
+        // 1. Mostrar primero el modal para que el contenedor adquiera dimensiones en el DOM
         this.cropImageModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
 
-        // Inicializar Cropper.js cuando la imagen cargue
-        this.cropperTargetImage.onload = () => {
+        const startCropper = () => {
+            this.destroyCropper();
             /* global Cropper */
             if (typeof Cropper !== 'undefined') {
-                this.cropperInstance = new Cropper(this.cropperTargetImage, {
-                    aspectRatio: 1, // Cuadrado perfecto estandarizado para el carrusel
-                    viewMode: 1,
-                    autoCropArea: 0.9,
-                    responsive: true,
-                    background: false
-                });
+                try {
+                    this.cropperInstance = new Cropper(this.cropperTargetImage, {
+                        aspectRatio: 1, // Cuadrado perfecto 1:1 estandarizado
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 0.85,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                        responsive: true,
+                        checkOrientation: false
+                    });
+                } catch (err) {
+                    console.error('Error al instanciar Cropper:', err);
+                }
+            } else {
+                console.error('Cropper.js no está disponible globalmente.');
+                this.showToast('Herramienta de recorte no disponible.', 'error');
             }
         };
+
+        // 2. Adjuntar el listener onload ANTES de asignar el src para evitar pérdida del evento en Base64
+        this.cropperTargetImage.onload = () => {
+            setTimeout(startCropper, 60);
+        };
+
+        this.cropperTargetImage.src = imageDataUrl;
+
+        // Si la imagen ya estuviese completamente cargada de forma síncrona
+        if (this.cropperTargetImage.complete) {
+            setTimeout(startCropper, 60);
+        }
 
         this.onCropConfirmedCallback = onCropConfirmed;
     }
@@ -530,13 +558,18 @@ export class NualaView {
     closeCropModal() {
         if (this.cropImageModal) {
             this.cropImageModal.classList.remove('open');
+            document.body.style.overflow = '';
         }
         this.destroyCropper();
     }
 
     destroyCropper() {
         if (this.cropperInstance) {
-            this.cropperInstance.destroy();
+            try {
+                this.cropperInstance.destroy();
+            } catch (err) {
+                console.warn('Error al destruir instancia de Cropper:', err);
+            }
             this.cropperInstance = null;
         }
     }
@@ -550,15 +583,20 @@ export class NualaView {
                 resolve(null);
                 return;
             }
-            const canvas = this.cropperInstance.getCroppedCanvas({
-                width: 900,
-                height: 900,
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high'
-            });
-            if (canvas) {
-                canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.9);
-            } else {
+            try {
+                const canvas = this.cropperInstance.getCroppedCanvas({
+                    width: 900,
+                    height: 900,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+                if (canvas) {
+                    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.9);
+                } else {
+                    resolve(null);
+                }
+            } catch (err) {
+                console.error('Error al generar canvas de recorte:', err);
                 resolve(null);
             }
         });

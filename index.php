@@ -31,8 +31,9 @@ $total_unique_visits = get_total_unique_visits();
         rel="stylesheet">
     <!-- Iconos minimalistas -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Cropper.js CSS para Recorte Visual -->
+    <!-- Cropper.js CSS y JS para Recorte Visual -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <!-- Estilos vanilla personalizados -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -571,9 +572,6 @@ $total_unique_visits = get_total_unique_visits();
             </div>
         </div>
     </div>
-
-    <!-- Librería Cropper.js JavaScript diferida para inicio veloz -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <!-- Tracker de Analítica Web y Heatmap de Clics -->
     <script src="js/tracker.js"></script>
