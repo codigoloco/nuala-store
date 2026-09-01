@@ -114,7 +114,14 @@ class Database {
                 'stats_heading' => 'Tiendas en todo el país',
                 'stats_description' => 'Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu boutique más cercana y vive una experiencia de compra personalizada.',
                 'stats_button_text' => 'Explorar Tiendas',
-                'stats_bg_image' => 'assets/images/tienda-nuala.jpg'
+                'stats_bg_image' => 'assets/images/tienda-nuala.jpg',
+                'stats_section_active' => '1',
+                'stats_bg_active' => '1',
+                'stats_tagline_active' => '1',
+                'stats_number_active' => '1',
+                'stats_heading_active' => '1',
+                'stats_description_active' => '1',
+                'stats_button_active' => '1'
             ];
             $stmt_check_key = $this->pdo->prepare("SELECT COUNT(*) as total FROM site_config WHERE LOWER(config_key) = :config_key");
             $stmt_insert_key = $this->pdo->prepare("INSERT INTO site_config (config_key, config_value) VALUES (:config_key, :config_value)");
@@ -162,6 +169,13 @@ class Database {
             'stats_description' => 'Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu boutique más cercana y vive una experiencia de compra personalizada.',
             'stats_button_text' => 'Explorar Tiendas',
             'stats_bg_image' => 'assets/images/tienda-nuala.jpg',
+            'stats_section_active' => '1',
+            'stats_bg_active' => '1',
+            'stats_tagline_active' => '1',
+            'stats_number_active' => '1',
+            'stats_heading_active' => '1',
+            'stats_description_active' => '1',
+            'stats_button_active' => '1',
             'admin_pin' => '1234',
             'is_db_seeded' => '1'
         ];

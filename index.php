@@ -262,10 +262,22 @@ $total_unique_visits = get_total_unique_visits();
                                 </div>
                             </div>
 
-                            <h4 class="admin-section-subtitle" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--color-border);"><i class="fa-solid fa-location-dot"></i> Sección 'Cerca de ti' (Expansión Nacional)</h4>
+                            <div class="form-label-with-toggle" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--color-border);">
+                                <h4 class="admin-section-subtitle" style="margin: 0;"><i class="fa-solid fa-location-dot"></i> Sección 'Cerca de ti' (Expansión Nacional)</h4>
+                                <label class="toggle-checkbox-label" title="Mostrar u ocultar la sección completa en la página">
+                                    <input type="checkbox" id="stats-section-active" checked>
+                                    <span>Mostrar Sección</span>
+                                </label>
+                            </div>
                             
                             <div class="form-group">
-                                <label>Imagen de Fondo de la Sección</label>
+                                <div class="form-label-with-toggle">
+                                    <label>Imagen de Fondo de la Sección</label>
+                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar la foto de fondo">
+                                        <input type="checkbox" id="stats-bg-active" checked>
+                                        <span>Mostrar Fondo</span>
+                                    </label>
+                                </div>
                                 <div class="upload-options-container">
                                     <label for="stats-bg-image-file" class="file-select-label"><i
                                             class="fa-solid fa-crop-simple"></i> Cortar y Subir Foto del
@@ -286,32 +298,62 @@ $total_unique_visits = get_total_unique_visits();
 
                             <div class="form-group-row">
                                 <div class="form-group">
-                                    <label for="stats-tagline-input">Subtítulo / Etiqueta Superior</label>
-                                    <input type="text" id="stats-tagline-input" required
+                                    <div class="form-label-with-toggle">
+                                        <label for="stats-tagline-input">Subtítulo / Etiqueta</label>
+                                        <label class="toggle-checkbox-label" title="Mostrar u ocultar la etiqueta superior">
+                                            <input type="checkbox" id="stats-tagline-active" checked>
+                                            <span>Mostrar</span>
+                                        </label>
+                                    </div>
+                                    <input type="text" id="stats-tagline-input"
                                         placeholder="Ej. Cerca de ti">
                                 </div>
                                 <div class="form-group">
-                                    <label for="stats-number-input">Número o Destacado</label>
-                                    <input type="text" id="stats-number-input" required
+                                    <div class="form-label-with-toggle">
+                                        <label for="stats-number-input">Número / Destacado</label>
+                                        <label class="toggle-checkbox-label" title="Mostrar u ocultar el número destacado">
+                                            <input type="checkbox" id="stats-number-active" checked>
+                                            <span>Mostrar</span>
+                                        </label>
+                                    </div>
+                                    <input type="text" id="stats-number-input"
                                         placeholder="Ej. +30">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="stats-heading-input">Título Principal de la Sección</label>
-                                <input type="text" id="stats-heading-input" required
+                                <div class="form-label-with-toggle">
+                                    <label for="stats-heading-input">Título Principal de la Sección</label>
+                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar el título principal">
+                                        <input type="checkbox" id="stats-heading-active" checked>
+                                        <span>Mostrar Título</span>
+                                    </label>
+                                </div>
+                                <input type="text" id="stats-heading-input"
                                     placeholder="Ej. Tiendas en todo el país">
                             </div>
 
                             <div class="form-group">
-                                <label for="stats-text-input">Descripción Detallada</label>
-                                <textarea id="stats-text-input" rows="3" required
+                                <div class="form-label-with-toggle">
+                                    <label for="stats-text-input">Descripción Detallada</label>
+                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar el texto descriptivo">
+                                        <input type="checkbox" id="stats-description-active" checked>
+                                        <span>Mostrar Descripción</span>
+                                    </label>
+                                </div>
+                                <textarea id="stats-text-input" rows="3"
                                     placeholder="Ej. Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela..."></textarea>
                             </div>
 
                             <div class="form-group">
-                                <label for="stats-button-input">Texto del Botón</label>
-                                <input type="text" id="stats-button-input" required
+                                <div class="form-label-with-toggle">
+                                    <label for="stats-button-input">Texto del Botón</label>
+                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar el botón de acción">
+                                        <input type="checkbox" id="stats-button-active" checked>
+                                        <span>Mostrar Botón</span>
+                                    </label>
+                                </div>
+                                <input type="text" id="stats-button-input"
                                     placeholder="Ej. Explorar Tiendas">
                             </div>
 
