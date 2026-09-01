@@ -173,6 +173,7 @@ export class NualaView {
         this.heroDescription = document.getElementById('hero-description');
 
         // Elementos de la Sección 'Cerca de ti' (Expansión Nacional)
+        this.statsScene = document.getElementById('stats-scene');
         this.statsTagline = document.getElementById('stats-tagline');
         this.statsMainNumber = document.getElementById('stats-main-number');
         this.statsHeading = document.getElementById('stats-heading');
@@ -188,12 +189,19 @@ export class NualaView {
         this.carouselFitInput = document.getElementById('carousel-fit-input');
 
         // Formulario de edición de la Sección 'Cerca de ti'
+        this.statsSectionActiveInput = document.getElementById('stats-section-active');
+        this.statsBgActiveInput = document.getElementById('stats-bg-active');
         this.statsBgImageInput = document.getElementById('stats-bg-image');
         this.statsBgPreview = document.getElementById('stats-bg-preview');
+        this.statsTaglineActiveInput = document.getElementById('stats-tagline-active');
         this.statsTaglineInput = document.getElementById('stats-tagline-input');
+        this.statsNumberActiveInput = document.getElementById('stats-number-active');
         this.statsNumberInput = document.getElementById('stats-number-input');
+        this.statsHeadingActiveInput = document.getElementById('stats-heading-active');
         this.statsHeadingInput = document.getElementById('stats-heading-input');
+        this.statsDescriptionActiveInput = document.getElementById('stats-description-active');
         this.statsTextInput = document.getElementById('stats-text-input');
+        this.statsButtonActiveInput = document.getElementById('stats-button-active');
         this.statsButtonInput = document.getElementById('stats-button-input');
 
         // Contenedores del DOM
@@ -247,6 +255,9 @@ export class NualaView {
     renderGeneralConfig(config) {
         if (!config) return;
 
+        // Helper para evaluar flags de visibilidad activa (por defecto true si no existe)
+        const isFieldActive = (val) => val === undefined || val === null || val === '1' || val === 1 || val === true;
+
         // 1. Hero Principal
         if (config.hero_title && this.heroTitle) {
             this.heroTitle.textContent = config.hero_title;
@@ -274,33 +285,73 @@ export class NualaView {
         document.documentElement.style.setProperty('--carousel-fit', fitVal);
 
         // 2. Sección Cerca de ti (Expansión Nacional / Estadísticas)
-        if (config.stats_tagline && this.statsTagline) {
-            this.statsTagline.textContent = config.stats_tagline;
-        }
-        if (config.stats_number && this.statsMainNumber) {
-            this.statsMainNumber.textContent = config.stats_number;
-        }
-        if (config.stats_heading && this.statsHeading) {
-            this.statsHeading.textContent = config.stats_heading;
-        }
-        if (config.stats_description && this.statsText) {
-            this.statsText.textContent = config.stats_description;
-        }
-        if (config.stats_button_text && this.btnViewLocations) {
-            this.btnViewLocations.textContent = config.stats_button_text;
-        }
-        if (config.stats_bg_image && this.statsBg) {
-            this.statsBg.style.backgroundImage = `url('${config.stats_bg_image}')`;
+        const isSectionActive = isFieldActive(config.stats_section_active);
+        if (this.statsScene) {
+            this.statsScene.style.display = isSectionActive ? '' : 'none';
         }
 
-        // Poblar campos del formulario en el panel de administración
-        if (this.statsTaglineInput) this.statsTaglineInput.value = config.stats_tagline || 'Cerca de ti';
-        if (this.statsNumberInput) this.statsNumberInput.value = config.stats_number || '+30';
-        if (this.statsHeadingInput) this.statsHeadingInput.value = config.stats_heading || 'Tiendas en todo el país';
-        if (this.statsTextInput) this.statsTextInput.value = config.stats_description || '';
-        if (this.statsButtonInput) this.statsButtonInput.value = config.stats_button_text || 'Explorar Tiendas';
+        const isBgActive = isFieldActive(config.stats_bg_active);
+        if (this.statsBg) {
+            if (isBgActive) {
+                this.statsBg.style.display = '';
+                if (config.stats_bg_image) {
+                    this.statsBg.style.backgroundImage = `url('${config.stats_bg_image}')`;
+                }
+            } else {
+                this.statsBg.style.display = 'none';
+            }
+        }
+
+        const isTaglineActive = isFieldActive(config.stats_tagline_active);
+        if (this.statsTagline) {
+            this.statsTagline.style.display = isTaglineActive ? '' : 'none';
+            if (config.stats_tagline) this.statsTagline.textContent = config.stats_tagline;
+        }
+
+        const isNumberActive = isFieldActive(config.stats_number_active);
+        if (this.statsMainNumber) {
+            this.statsMainNumber.style.display = isNumberActive ? '' : 'none';
+            if (config.stats_number) this.statsMainNumber.textContent = config.stats_number;
+        }
+
+        const isHeadingActive = isFieldActive(config.stats_heading_active);
+        if (this.statsHeading) {
+            this.statsHeading.style.display = isHeadingActive ? '' : 'none';
+            if (config.stats_heading) this.statsHeading.textContent = config.stats_heading;
+        }
+
+        const isDescActive = isFieldActive(config.stats_description_active);
+        if (this.statsText) {
+            this.statsText.style.display = isDescActive ? '' : 'none';
+            if (config.stats_description) this.statsText.textContent = config.stats_description;
+        }
+
+        const isButtonActive = isFieldActive(config.stats_button_active);
+        if (this.btnViewLocations) {
+            this.btnViewLocations.style.display = isButtonActive ? '' : 'none';
+            if (config.stats_button_text) this.btnViewLocations.textContent = config.stats_button_text;
+        }
+
+        // Poblar campos y switches del formulario en el panel de administración
+        if (this.statsSectionActiveInput) this.statsSectionActiveInput.checked = isSectionActive;
+        if (this.statsBgActiveInput) this.statsBgActiveInput.checked = isBgActive;
         if (this.statsBgImageInput) this.statsBgImageInput.value = config.stats_bg_image || 'assets/images/tienda-nuala.jpg';
         if (this.statsBgPreview) this.statsBgPreview.src = config.stats_bg_image || 'assets/images/tienda-nuala.jpg';
+
+        if (this.statsTaglineActiveInput) this.statsTaglineActiveInput.checked = isTaglineActive;
+        if (this.statsTaglineInput) this.statsTaglineInput.value = config.stats_tagline || 'Cerca de ti';
+
+        if (this.statsNumberActiveInput) this.statsNumberActiveInput.checked = isNumberActive;
+        if (this.statsNumberInput) this.statsNumberInput.value = config.stats_number || '+30';
+
+        if (this.statsHeadingActiveInput) this.statsHeadingActiveInput.checked = isHeadingActive;
+        if (this.statsHeadingInput) this.statsHeadingInput.value = config.stats_heading || 'Tiendas en todo el país';
+
+        if (this.statsDescriptionActiveInput) this.statsDescriptionActiveInput.checked = isDescActive;
+        if (this.statsTextInput) this.statsTextInput.value = config.stats_description || '';
+
+        if (this.statsButtonActiveInput) this.statsButtonActiveInput.checked = isButtonActive;
+        if (this.statsButtonInput) this.statsButtonInput.value = config.stats_button_text || 'Explorar Tiendas';
     }
 
     /**

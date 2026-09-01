@@ -426,6 +426,15 @@ class NualaController {
                 const statsButtonVal = document.getElementById('stats-button-input')?.value.trim() || 'Explorar Tiendas';
                 const statsBgImageVal = document.getElementById('stats-bg-image')?.value.trim() || 'assets/images/tienda-nuala.jpg';
 
+                // Flags de visibilidad (Mostrar / Ocultar)
+                const statsSectionActiveVal = document.getElementById('stats-section-active')?.checked ? '1' : '0';
+                const statsBgActiveVal = document.getElementById('stats-bg-active')?.checked ? '1' : '0';
+                const statsTaglineActiveVal = document.getElementById('stats-tagline-active')?.checked ? '1' : '0';
+                const statsNumberActiveVal = document.getElementById('stats-number-active')?.checked ? '1' : '0';
+                const statsHeadingActiveVal = document.getElementById('stats-heading-active')?.checked ? '1' : '0';
+                const statsDescriptionActiveVal = document.getElementById('stats-description-active')?.checked ? '1' : '0';
+                const statsButtonActiveVal = document.getElementById('stats-button-active')?.checked ? '1' : '0';
+
                 const configsToSave = {
                     hero_title: titleVal,
                     hero_subtitle: subtitleVal,
@@ -437,7 +446,14 @@ class NualaController {
                     stats_heading: statsHeadingVal,
                     stats_description: statsTextVal,
                     stats_button_text: statsButtonVal,
-                    stats_bg_image: statsBgImageVal
+                    stats_bg_image: statsBgImageVal,
+                    stats_section_active: statsSectionActiveVal,
+                    stats_bg_active: statsBgActiveVal,
+                    stats_tagline_active: statsTaglineActiveVal,
+                    stats_number_active: statsNumberActiveVal,
+                    stats_heading_active: statsHeadingActiveVal,
+                    stats_description_active: statsDescriptionActiveVal,
+                    stats_button_active: statsButtonActiveVal
                 };
 
                 if (pinVal && pinVal.length >= 4) {
@@ -449,7 +465,7 @@ class NualaController {
                 
                 const pinChangeInput = document.getElementById('admin-pin-change-input');
                 if (pinChangeInput) pinChangeInput.value = '';
-                this.view.showToast('Configuración general y sección Cerca de ti guardadas con éxito.', 'success');
+                this.view.showToast('Configuración general y opciones de visibilidad guardadas con éxito.', 'success');
             });
         }
     }
