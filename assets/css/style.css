@@ -661,7 +661,7 @@ button {
 }
 
 /* Carrusel de Tiendas/Ubicaciones */
-.locations-carousel {
+.locations-carousel, .stores-carousel {
     max-width: 1000px;
     height: auto;
     min-height: 480px;
@@ -672,7 +672,7 @@ button {
     border-radius: 0;
 }
 
-.locations-carousel .carousel-wrapper {
+.locations-carousel .carousel-wrapper, .stores-carousel .carousel-wrapper {
     gap: 30px;
 }
 
@@ -1375,6 +1375,17 @@ button {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+.admin-section-subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .form-group-row {

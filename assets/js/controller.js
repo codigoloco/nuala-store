@@ -63,7 +63,8 @@ class NualaController {
             { fileInputId: 'product-image-file', textInputId: 'product-image', previewImgId: 'product-image-preview' },
             { fileInputId: 'edit-product-image-file', textInputId: 'edit-product-image', previewImgId: 'edit-product-preview' },
             { fileInputId: 'store-image-file', textInputId: 'store-image', previewImgId: 'store-image-preview' },
-            { fileInputId: 'edit-store-image-file', textInputId: 'edit-store-image', previewImgId: 'edit-store-preview' }
+            { fileInputId: 'edit-store-image-file', textInputId: 'edit-store-image', previewImgId: 'edit-store-preview' },
+            { fileInputId: 'stats-bg-image-file', textInputId: 'stats-bg-image', previewImgId: 'stats-bg-preview' }
         ];
 
         fileInputConfigs.forEach(config => {
@@ -410,19 +411,33 @@ class NualaController {
         if (formEditHero) {
             formEditHero.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const titleVal = document.getElementById('hero-title-input').value.trim();
-                const subtitleVal = document.getElementById('hero-subtitle-input').value.trim();
-                const descriptionVal = document.getElementById('hero-description-input').value.trim();
-                const heightVal = document.getElementById('carousel-height-input').value.trim();
-                const fitVal = document.getElementById('carousel-fit-input').value.trim();
-                const pinVal = document.getElementById('admin-pin-change-input').value.trim();
+                const titleVal = document.getElementById('hero-title-input')?.value.trim() || '';
+                const subtitleVal = document.getElementById('hero-subtitle-input')?.value.trim() || '';
+                const descriptionVal = document.getElementById('hero-description-input')?.value.trim() || '';
+                const heightVal = document.getElementById('carousel-height-input')?.value.trim() || '520';
+                const fitVal = document.getElementById('carousel-fit-input')?.value.trim() || 'cover';
+                const pinVal = document.getElementById('admin-pin-change-input')?.value.trim() || '';
+
+                // Valores de la sección Cerca de ti (Expansión Nacional)
+                const statsTaglineVal = document.getElementById('stats-tagline-input')?.value.trim() || 'Cerca de ti';
+                const statsNumberVal = document.getElementById('stats-number-input')?.value.trim() || '+30';
+                const statsHeadingVal = document.getElementById('stats-heading-input')?.value.trim() || 'Tiendas en todo el país';
+                const statsTextVal = document.getElementById('stats-text-input')?.value.trim() || '';
+                const statsButtonVal = document.getElementById('stats-button-input')?.value.trim() || 'Explorar Tiendas';
+                const statsBgImageVal = document.getElementById('stats-bg-image')?.value.trim() || 'assets/images/tienda-nuala.jpg';
 
                 const configsToSave = {
                     hero_title: titleVal,
                     hero_subtitle: subtitleVal,
                     hero_description: descriptionVal,
-                    carousel_height: heightVal || '520',
-                    carousel_object_fit: fitVal || 'cover'
+                    carousel_height: heightVal,
+                    carousel_object_fit: fitVal,
+                    stats_tagline: statsTaglineVal,
+                    stats_number: statsNumberVal,
+                    stats_heading: statsHeadingVal,
+                    stats_description: statsTextVal,
+                    stats_button_text: statsButtonVal,
+                    stats_bg_image: statsBgImageVal
                 };
 
                 if (pinVal && pinVal.length >= 4) {
@@ -430,10 +445,11 @@ class NualaController {
                 }
 
                 const updatedConfig = await this.model.saveConfig(configsToSave);
-                this.view.renderHeroConfig(updatedConfig);
+                this.view.renderGeneralConfig(updatedConfig);
                 
-                document.getElementById('admin-pin-change-input').value = '';
-                this.view.showToast('Configuración general y dimensiones del carrusel guardadas.', 'success');
+                const pinChangeInput = document.getElementById('admin-pin-change-input');
+                if (pinChangeInput) pinChangeInput.value = '';
+                this.view.showToast('Configuración general y sección Cerca de ti guardadas con éxito.', 'success');
             });
         }
     }

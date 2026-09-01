@@ -79,10 +79,10 @@
     <section class="scene-section stats-scene" id="stats-scene">
         <div class="stats-background" id="stats-bg"></div>
         <div class="stats-content scroll-reveal">
-            <p class="stats-tagline">Cerca de ti</p>
+            <p class="stats-tagline" id="stats-tagline">Cerca de ti</p>
             <h2 class="stats-number" id="stats-main-number">+30</h2>
-            <h3 class="stats-heading">Tiendas en todo el país</h3>
-            <p class="stats-text">Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu
+            <h3 class="stats-heading" id="stats-heading">Tiendas en todo el país</h3>
+            <p class="stats-text" id="stats-text">Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu
                 boutique más cercana y vive una experiencia de compra personalizada.</p>
             <a href="#locations-scene" class="btn btn-primary" id="btn-view-locations">Explorar Tiendas</a>
         </div>
@@ -116,11 +116,8 @@
         <!-- Carrusel de Tiendas -->
         <div class="carousel-container locations-carousel scroll-reveal delay-2" id="stores-carousel">
             <div class="carousel-wrapper" id="stores-wrapper">
-                <!-- Se inyectará dinámicamente mediante JS (View) -->
+                <!-- Tarjetas de tiendas renderizadas dinámicamente por JS desde SQLite3 -->
             </div>
-
-            <!-- Indicadores -->
-            <div class="carousel-indicators" id="stores-indicators"></div>
         </div>
     </section>
 
@@ -128,59 +125,61 @@
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-brand">
-                <div class="brand-logo-container">
-                    <a href="#" class="footer-logo">NUALA</a>
-                    <span class="footer-slogan">ESTILO QUE ENAMORA</span>
+                <span class="brand-logo footer-logo">NUALA</span>
+                <p class="footer-desc">Moda íntima con acabados de alta costura, pensada para resaltar tu elegancia
+                    natural con la máxima comodidad.</p>
+                <div class="footer-fiscal-badge">
+                    <i class="fa-solid fa-building"></i> <span>RIF: <strong>J505814567</strong></span>
                 </div>
-                <p class="footer-brand-description">Elegancia íntima, confeccionada con el corazón.</p>
-                <p class="footer-rif">RIF: J505814567</p>
             </div>
-            <div class="footer-links">
-                <h4>Colecciones</h4>
-                <a href="#">Para Ella</a>
-                <a href="#">Para Él</a>
-                <a href="#">Novedades</a>
+
+            <div class="footer-links-group">
+                <h4 class="footer-title">Colecciones</h4>
+                <ul>
+                    <li><a href="#hero-scene" id="footer-link-dama">Dama</a></li>
+                    <li><a href="#hero-scene" id="footer-link-caballero">Caballero</a></li>
+                    <li><a href="#hero-scene">Novedades</a></li>
+                </ul>
             </div>
-            <div class="footer-links">
-                <h4>Compañía</h4>
-                <a href="#locations-scene">Nuestras Tiendas</a>
-                <a href="#" id="link-open-admin">Gestión de Configuración</a>
-                <a href="#">Sostenibilidad</a>
+
+            <div class="footer-links-group">
+                <h4 class="footer-title">Nuestra Red</h4>
+                <ul>
+                    <li><a href="#stats-scene">Presencia Nacional</a></li>
+                    <li><a href="#locations-scene">Boutiques</a></li>
+                    <li><a href="#locations-scene">Atención al Cliente</a></li>
+                </ul>
             </div>
-            <div class="footer-social">
-                <h4>Síguenos</h4>
-                <div class="social-icons">
-                    <a href="https://instagram.com/nuala.vzla" target="_blank" aria-label="Instagram"><i
-                            class="fa-brands fa-instagram"></i></a>
-                    <a href="https://tiktok.com/@nuala.vzla" target="_blank" aria-label="TikTok"><i
-                            class="fa-brands fa-tiktok"></i></a>
-                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                </div>
-                <p class="social-user">@nuala.vzla</p>
+
+            <div class="footer-links-group footer-admin-group">
+                <h4 class="footer-title">Administración</h4>
+                <p class="footer-desc">Acceso protegido mediante PIN para gestión de contenidos.</p>
+                <button class="btn btn-outline" id="btn-open-admin"><i class="fa-solid fa-lock"></i> Gestión
+                    Tienda</button>
             </div>
         </div>
+
         <div class="footer-bottom">
-            <p>&copy; 2026 NUALA. Todos los derechos reservados. Diseñado con amor y delicadeza.</p>
+            <p>&copy; 2026 NUALA C.A. Todos los derechos reservados. | RIF: J505814567</p>
         </div>
     </footer>
 
-    <!-- Ventana Modal de Autenticación de PIN ("Panel Estricto") -->
+    <!-- Ventana Modal de Acceso por PIN -->
     <div class="modal-overlay" id="admin-pin-modal">
-        <div class="modal-card pin-modal-card">
+        <div class="modal-container pin-modal-box">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-lock"></i> Acceso Estricto</h2>
-                <button class="modal-close" id="btn-close-pin-modal" aria-label="Cerrar">&times;</button>
+                <h2><i class="fa-solid fa-shield-halved"></i> Acceso Administrativo</h2>
+                <button class="modal-close" id="btn-close-pin" aria-label="Cerrar">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="pin-instruction">Ingresa el PIN de seguridad para acceder al panel de configuración del sitio.
-                </p>
-                <form id="form-admin-pin">
+                <form id="form-admin-pin" class="admin-form">
+                    <p class="pin-instruction">Ingresa el PIN de 4 dígitos para acceder al gestor.</p>
                     <div class="form-group">
-                        <label for="admin-pin-input">PIN de Seguridad</label>
-                        <input type="password" id="admin-pin-input" required placeholder="PIN por defecto: 1234"
-                            maxlength="10">
+                        <input type="password" id="admin-pin-input" maxlength="8" placeholder="****" required
+                            autocomplete="off">
                     </div>
-                    <button type="submit" class="btn btn-primary form-submit">Verificar PIN</button>
+                    <button type="submit" class="btn btn-primary form-submit"><i
+                            class="fa-solid fa-right-to-bracket"></i> Desbloquear Panel</button>
                 </form>
             </div>
         </div>
@@ -211,6 +210,7 @@
                     <div class="admin-form-container full-width">
                         <h3>Editar Contextos y Dimensiones del Sitio</h3>
                         <form id="form-edit-hero" class="admin-form">
+                            <h4 class="admin-section-subtitle"><i class="fa-solid fa-star"></i> Hero Principal</h4>
                             <div class="form-group">
                                 <label for="hero-title-input">Título Principal (id: hero-title)</label>
                                 <input type="text" id="hero-title-input" required
@@ -244,6 +244,60 @@
                                 </div>
                             </div>
 
+                            <h4 class="admin-section-subtitle" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--color-border);"><i class="fa-solid fa-location-dot"></i> Sección 'Cerca de ti' (Expansión Nacional)</h4>
+                            
+                            <div class="form-group">
+                                <label>Imagen de Fondo de la Sección</label>
+                                <div class="upload-options-container">
+                                    <label for="stats-bg-image-file" class="file-select-label"><i
+                                            class="fa-solid fa-crop-simple"></i> Cortar y Subir Foto del
+                                        Dispositivo</label>
+                                    <input type="file" id="stats-bg-image-file" class="file-input-hidden"
+                                        accept="image/*">
+                                    <span class="upload-or-divider">o ingresa la URL:</span>
+                                    <input type="text" id="stats-bg-image"
+                                        placeholder="Ej. assets/images/tienda-nuala.jpg"
+                                        value="assets/images/tienda-nuala.jpg">
+                                </div>
+                            </div>
+                            <div class="image-preview-container">
+                                <p>Vista previa del fondo:</p>
+                                <img id="stats-bg-preview" src="assets/images/tienda-nuala.jpg"
+                                    alt="Vista previa fondo" style="max-height: 140px; object-fit: cover;">
+                            </div>
+
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label for="stats-tagline-input">Subtítulo / Etiqueta Superior</label>
+                                    <input type="text" id="stats-tagline-input" required
+                                        placeholder="Ej. Cerca de ti">
+                                </div>
+                                <div class="form-group">
+                                    <label for="stats-number-input">Número o Destacado</label>
+                                    <input type="text" id="stats-number-input" required
+                                        placeholder="Ej. +30">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stats-heading-input">Título Principal de la Sección</label>
+                                <input type="text" id="stats-heading-input" required
+                                    placeholder="Ej. Tiendas en todo el país">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stats-text-input">Descripción Detallada</label>
+                                <textarea id="stats-text-input" rows="3" required
+                                    placeholder="Ej. Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stats-button-input">Texto del Botón</label>
+                                <input type="text" id="stats-button-input" required
+                                    placeholder="Ej. Explorar Tiendas">
+                            </div>
+
+                            <h4 class="admin-section-subtitle" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--color-border);"><i class="fa-solid fa-shield-halved"></i> Seguridad</h4>
                             <div class="form-group">
                                 <label for="admin-pin-change-input">Cambiar PIN de Acceso</label>
                                 <input type="password" id="admin-pin-change-input"

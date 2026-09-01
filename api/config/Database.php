@@ -106,6 +106,28 @@ class Database {
             // Silencioso si falla la verificación
         }
 
+        // Migración de claves de configuración para sección de estadísticas si no existen
+        try {
+            $default_stats_migration = [
+                'stats_tagline' => 'Cerca de ti',
+                'stats_number' => '+30',
+                'stats_heading' => 'Tiendas en todo el país',
+                'stats_description' => 'Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu boutique más cercana y vive una experiencia de compra personalizada.',
+                'stats_button_text' => 'Explorar Tiendas',
+                'stats_bg_image' => 'assets/images/tienda-nuala.jpg'
+            ];
+            $stmt_check_key = $this->pdo->prepare("SELECT COUNT(*) as total FROM site_config WHERE LOWER(config_key) = :config_key");
+            $stmt_insert_key = $this->pdo->prepare("INSERT INTO site_config (config_key, config_value) VALUES (:config_key, :config_value)");
+            foreach ($default_stats_migration as $s_key => $s_val) {
+                $stmt_check_key->execute([':config_key' => $s_key]);
+                if ((int)$stmt_check_key->fetch()['total'] === 0) {
+                    $stmt_insert_key->execute([':config_key' => $s_key, ':config_value' => $s_val]);
+                }
+            }
+        } catch (Exception $e) {
+            // Silencioso si falla
+        }
+
         $this->seed_default_data_once();
     }
 
@@ -134,6 +156,12 @@ class Database {
             'hero_description' => 'Siluetas delicadas diseñadas para abrazar tu esencia. Confort y sofisticación en armonía perfecta para dama y caballero.',
             'carousel_height' => '520',
             'carousel_object_fit' => 'cover',
+            'stats_tagline' => 'Cerca de ti',
+            'stats_number' => '+30',
+            'stats_heading' => 'Tiendas en todo el país',
+            'stats_description' => 'Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu boutique más cercana y vive una experiencia de compra personalizada.',
+            'stats_button_text' => 'Explorar Tiendas',
+            'stats_bg_image' => 'assets/images/tienda-nuala.jpg',
             'admin_pin' => '1234',
             'is_db_seeded' => '1'
         ];

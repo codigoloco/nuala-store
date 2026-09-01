@@ -172,12 +172,29 @@ export class NualaView {
         this.heroSubtitle = document.getElementById('hero-subtitle');
         this.heroDescription = document.getElementById('hero-description');
 
+        // Elementos de la Sección 'Cerca de ti' (Expansión Nacional)
+        this.statsTagline = document.getElementById('stats-tagline');
+        this.statsMainNumber = document.getElementById('stats-main-number');
+        this.statsHeading = document.getElementById('stats-heading');
+        this.statsText = document.getElementById('stats-text');
+        this.btnViewLocations = document.getElementById('btn-view-locations');
+        this.statsBg = document.getElementById('stats-bg');
+
         // Formulario de edición del Hero y Dimensiones
         this.heroTitleInput = document.getElementById('hero-title-input');
         this.heroSubtitleInput = document.getElementById('hero-subtitle-input');
         this.heroDescriptionInput = document.getElementById('hero-description-input');
         this.carouselHeightInput = document.getElementById('carousel-height-input');
         this.carouselFitInput = document.getElementById('carousel-fit-input');
+
+        // Formulario de edición de la Sección 'Cerca de ti'
+        this.statsBgImageInput = document.getElementById('stats-bg-image');
+        this.statsBgPreview = document.getElementById('stats-bg-preview');
+        this.statsTaglineInput = document.getElementById('stats-tagline-input');
+        this.statsNumberInput = document.getElementById('stats-number-input');
+        this.statsHeadingInput = document.getElementById('stats-heading-input');
+        this.statsTextInput = document.getElementById('stats-text-input');
+        this.statsButtonInput = document.getElementById('stats-button-input');
 
         // Contenedores del DOM
         this.productsWrapper = document.getElementById('products-wrapper');
@@ -225,9 +242,12 @@ export class NualaView {
     }
 
     /**
-     * Renderiza la configuración del Hero y dimensiones del carrusel en el DOM principal y formularios.
+     * Renderiza la configuración general del sitio (Hero, Dimensiones del Carrusel y Sección Cerca de ti).
      */
-    renderHeroConfig(config) {
+    renderGeneralConfig(config) {
+        if (!config) return;
+
+        // 1. Hero Principal
         if (config.hero_title && this.heroTitle) {
             this.heroTitle.textContent = config.hero_title;
         }
@@ -252,6 +272,42 @@ export class NualaView {
         // Inyectar variables CSS globales para tamaño uniforme
         document.documentElement.style.setProperty('--carousel-height', `${heightVal}px`);
         document.documentElement.style.setProperty('--carousel-fit', fitVal);
+
+        // 2. Sección Cerca de ti (Expansión Nacional / Estadísticas)
+        if (config.stats_tagline && this.statsTagline) {
+            this.statsTagline.textContent = config.stats_tagline;
+        }
+        if (config.stats_number && this.statsMainNumber) {
+            this.statsMainNumber.textContent = config.stats_number;
+        }
+        if (config.stats_heading && this.statsHeading) {
+            this.statsHeading.textContent = config.stats_heading;
+        }
+        if (config.stats_description && this.statsText) {
+            this.statsText.textContent = config.stats_description;
+        }
+        if (config.stats_button_text && this.btnViewLocations) {
+            this.btnViewLocations.textContent = config.stats_button_text;
+        }
+        if (config.stats_bg_image && this.statsBg) {
+            this.statsBg.style.backgroundImage = `url('${config.stats_bg_image}')`;
+        }
+
+        // Poblar campos del formulario en el panel de administración
+        if (this.statsTaglineInput) this.statsTaglineInput.value = config.stats_tagline || 'Cerca de ti';
+        if (this.statsNumberInput) this.statsNumberInput.value = config.stats_number || '+30';
+        if (this.statsHeadingInput) this.statsHeadingInput.value = config.stats_heading || 'Tiendas en todo el país';
+        if (this.statsTextInput) this.statsTextInput.value = config.stats_description || '';
+        if (this.statsButtonInput) this.statsButtonInput.value = config.stats_button_text || 'Explorar Tiendas';
+        if (this.statsBgImageInput) this.statsBgImageInput.value = config.stats_bg_image || 'assets/images/tienda-nuala.jpg';
+        if (this.statsBgPreview) this.statsBgPreview.src = config.stats_bg_image || 'assets/images/tienda-nuala.jpg';
+    }
+
+    /**
+     * Mantiene retrocompatibilidad para llamadas existentes a renderHeroConfig.
+     */
+    renderHeroConfig(config) {
+        this.renderGeneralConfig(config);
     }
 
     /**
