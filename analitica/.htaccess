@@ -1,0 +1,10 @@
+# Bloquear descarga directa de archivos SQLite/SQL permitiendo endpoints PHP
+<FilesMatch "\.(db|db-wal|db-shm|sqlite|sqlite3|sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

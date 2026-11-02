@@ -1,41 +1,45 @@
-import { NualaModel } from './model.js';
+import { NualaModel, normalizeComparableText } from './model.js';
 import { NualaView } from './view.js';
 
 /**
  * Clase NualaController - Actúa como Controlador (Controller) en la arquitectura MVC.
- * Coordina las interacciones entre NualaModel y NualaView con carga ultrarrápida (0ms instant UI).
- * Sigue los principios SOLID (Responsabilidad Única e Inyección de Dependencias).
- * Variables en camelCase.
+ * Coordina las interacciones entre NualaModel y NualaView.
+ * Sigue los principios SOLID y utiliza camelCase para variables JavaScript.
  */
 class NualaController {
     constructor(model, view) {
         this.model = model;
         this.view = view;
-        
-        // Estado inicial del filtro de tiendas por Estado
+
         this.activeStateFilter = 'Todas';
+        this.activeQuickFilter = 'todos';
+        this.searchQuery = '';
+        this.adminSearchQuery = '';
         this.activeCropTarget = null;
+        this.currentTheme = localStorage.getItem('nuala_theme') || 'normal';
 
         this.init();
     }
 
     /**
-     * Inicialización híbrida ultrarrápida: pinta la interfaz en 0ms y sincroniza con SQLite3 en segundo plano.
+     * Inicialización híbrida: pinta caché seguro inmediato y sincroniza con SQLite3.
      */
     async init() {
-        // 1. Cargar cacheados locales para renderizado instantáneo en 0ms
+        this.view.applyTheme(this.currentTheme);
+
         this.model.loadLocalStorage();
         if (this.model.getConfig()) this.view.renderHeroConfig(this.model.getConfig());
         if (this.model.getProducts()) this.view.renderProducts(this.model.getProducts());
         this.refreshFilterBar();
         this.refreshStoresData();
 
-        // 2. Configurar todos los event listeners e interfaz
+        this.setupThemeToggle();
         this.setupCategoryButtons();
         this.setupScrollInteractions();
         this.setupScrollRevealObserver();
-        this.setupAdminPanelEvents();
         this.setupLocationFiltersEvents();
+        this.setupStoreTrackingEvents();
+        this.setupAdminPanelEvents();
         this.setupHeroFormEvents();
         this.setupEditProductModalEvents();
         this.setupEditStoreModalEvents();
@@ -43,18 +47,46 @@ class NualaController {
 
         this.handleScroll();
 
-        // 3. Sincronizar en segundo plano la fuente de verdad desde SQLite3
         await this.model.initData();
         this.view.renderHeroConfig(this.model.getConfig());
         this.view.renderProducts(this.model.getProducts());
         this.refreshFilterBar();
         this.refreshStoresData();
-        this.view.renderAdminStoresList(this.model.getStores());
         this.view.renderAdminProductsList(this.model.getProducts());
+        this.view.renderAuditLogs(this.model.getAuditLogs());
     }
 
     /**
-     * Configura la selección de imágenes con apertura del modal interactivo de recorte (Cropper.js)
+     * Controla el cambio seguro entre modo normal (claro corporativo) y modo oscuro.
+     */
+    setupThemeToggle() {
+        if (this.view.btnThemeToggle) {
+            this.view.btnThemeToggle.addEventListener('click', () => {
+                this.currentTheme = normalizeComparableText(this.currentTheme) === 'dark' ? 'normal' : 'dark';
+                localStorage.setItem('nuala_theme', this.currentTheme);
+                this.view.applyTheme(this.currentTheme);
+            });
+        }
+    }
+
+    /**
+     * Verifica si una operación administrativa expiró por sesión y solicita reautenticación.
+     */
+    handleAuthResultCheck(result) {
+        if (result && result.auth_required) {
+            this.model.isAdminAuthenticated = false;
+            this.view.closeEditProductModal();
+            this.view.closeEditStoreModal();
+            this.view.closeAdminModal();
+            this.view.openPinModal();
+            this.view.showToast(result.message || 'Sesión expirada. Ingresa tu PIN nuevamente.', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Configura la selección de imágenes con recorte interactivo (Cropper.js) y subida segura.
      */
     setupImageFileUploads() {
         this.view.setupCropperToolbarEvents();
@@ -95,7 +127,6 @@ class NualaController {
             }
         });
 
-        // Botón "Aplicar Recorte y Subir"
         const btnApplyCrop = document.getElementById('btn-apply-crop');
         if (btnApplyCrop) {
             btnApplyCrop.addEventListener('click', async () => {
@@ -113,10 +144,13 @@ class NualaController {
                 const croppedFile = new File([croppedBlob], croppedFileName, { type: 'image/jpeg' });
 
                 const uploadResult = await this.model.uploadImage(croppedFile);
+                if (!this.handleAuthResultCheck(uploadResult)) return;
+
                 if (uploadResult && uploadResult.success) {
                     this.activeCropTarget.textInput.value = uploadResult.image_url;
                     this.activeCropTarget.previewImg.src = uploadResult.image_url;
                     this.view.closeCropModal();
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
                     this.view.showToast('Recorte guardado y subido correctamente.', 'success');
                 } else {
                     this.view.showToast(uploadResult ? uploadResult.message : 'Error al subir la imagen recortada.', 'error');
@@ -126,37 +160,25 @@ class NualaController {
     }
 
     /**
-     * Configura la interacción para filtrar productos por género al presionar botones
+     * Configura la interacción para filtrar productos por género.
      */
     setupCategoryButtons() {
-        const btnShopWomen = document.getElementById('btn-shop-women');
-        const btnShopMen = document.getElementById('btn-shop-men');
+        const filterByGender = (categoryName, event) => {
+            if (event) event.preventDefault();
+            const filtered = this.model.getProductsByCategory(categoryName);
+            this.view.renderProducts(filtered);
+            document.getElementById('products-carousel')?.scrollIntoView({ behavior: 'smooth' });
+        };
 
-        if (btnShopWomen) {
-            btnShopWomen.addEventListener('click', (e) => {
-                e.preventDefault();
-                const filtered = this.model.getProductsByCategory('Dama');
-                this.view.renderProducts(filtered);
-                document.getElementById('products-carousel').scrollIntoView({ behavior: 'smooth' });
-            });
-        }
-
-        if (btnShopMen) {
-            btnShopMen.addEventListener('click', (e) => {
-                e.preventDefault();
-                const filtered = this.model.getProductsByCategory('Caballero');
-                this.view.renderProducts(filtered);
-                document.getElementById('products-carousel').scrollIntoView({ behavior: 'smooth' });
-            });
-        }
+        document.getElementById('btn-shop-women')?.addEventListener('click', (e) => filterByGender('Dama', e));
+        document.getElementById('btn-shop-men')?.addEventListener('click', (e) => filterByGender('Caballero', e));
+        document.getElementById('footer-link-dama')?.addEventListener('click', (e) => filterByGender('Dama', e));
+        document.getElementById('footer-link-caballero')?.addEventListener('click', (e) => filterByGender('Caballero', e));
     }
 
-    /**
-     * Configura los controladores de scroll del sitio
-     */
     setupScrollInteractions() {
         window.addEventListener('scroll', () => this.handleScroll(), { passive: true });
-        
+
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -175,11 +197,8 @@ class NualaController {
         this.view.toggleHeaderStyle(scrollTop > 50);
     }
 
-    /**
-     * IntersectionObserver para animación scroll-reveal y actualización del menú activo.
-     */
     setupScrollRevealObserver() {
-        const revealOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const revealOptions = { root: null, rootMargin: '0px', threshold: 0.12 };
         const revealObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -189,39 +208,86 @@ class NualaController {
             });
         }, revealOptions);
 
-        const revealElements = document.querySelectorAll('.scroll-reveal');
-        revealElements.forEach(element => revealObserver.observe(element));
+        document.querySelectorAll('.scroll-reveal').forEach(element => revealObserver.observe(element));
 
         const sectionOptions = { root: null, rootMargin: '-50% 0px -50% 0px', threshold: 0 };
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const sectionId = entry.target.getAttribute('id');
-                    this.view.updateActiveNavLink(sectionId);
+                    if (sectionId) this.view.updateActiveNavLink(sectionId);
                     entry.target.classList.add('reveal-active');
                 }
             });
         }, sectionOptions);
 
-        const sections = document.querySelectorAll('.scene-section');
-        sections.forEach(section => sectionObserver.observe(section));
+        document.querySelectorAll('.scene-section').forEach(section => sectionObserver.observe(section));
     }
 
     /**
-     * Configura la barra de filtros de tiendas por Estado.
-     * Normaliza los textos a minúsculas al comparar.
+     * Configura buscador instantáneo, filtros rápidos (Cashea / Mayor / Detal) y filtro por Estado.
      */
     setupLocationFiltersEvents() {
         if (this.view.locationsFilterBar) {
             this.view.locationsFilterBar.addEventListener('click', (e) => {
                 const filterBtn = e.target.closest('.filter-btn');
                 if (filterBtn) {
-                    const selectedState = filterBtn.getAttribute('data-state');
-                    this.activeStateFilter = selectedState;
+                    this.activeStateFilter = filterBtn.getAttribute('data-state') || 'Todas';
                     this.refreshFilterBar();
-                    
-                    const filteredStores = this.model.getStoresByState(selectedState);
-                    this.view.renderStores(filteredStores);
+                    this.refreshStoresData();
+                }
+            });
+        }
+
+        const searchInput = document.getElementById('store-search-input');
+        const btnClearSearch = document.getElementById('btn-clear-store-search');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                this.searchQuery = searchInput.value.trim();
+                if (btnClearSearch) {
+                    btnClearSearch.style.display = this.searchQuery ? 'inline-flex' : 'none';
+                }
+                this.refreshStoresData();
+            });
+        }
+
+        if (btnClearSearch) {
+            btnClearSearch.addEventListener('click', () => {
+                this.searchQuery = '';
+                if (searchInput) searchInput.value = '';
+                btnClearSearch.style.display = 'none';
+                this.refreshStoresData();
+            });
+        }
+
+        const quickFilterContainer = document.getElementById('stores-quick-filters');
+        if (quickFilterContainer) {
+            quickFilterContainer.addEventListener('click', (e) => {
+                const quickBtn = e.target.closest('.quick-mode-btn');
+                if (!quickBtn) return;
+                this.activeQuickFilter = quickBtn.getAttribute('data-quick') || 'todos';
+                quickFilterContainer.querySelectorAll('.quick-mode-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn === quickBtn);
+                });
+                this.refreshStoresData();
+            });
+        }
+    }
+
+    /**
+     * Registra clics de usuarios en botones de WhatsApp, Google Maps, Instagram y TikTok de cada tienda.
+     */
+    setupStoreTrackingEvents() {
+        if (this.view.storesWrapper) {
+            this.view.storesWrapper.addEventListener('click', (e) => {
+                const trackedLink = e.target.closest('.track-store-link');
+                if (trackedLink) {
+                    const storeId = trackedLink.getAttribute('data-store-id');
+                    const channel = trackedLink.getAttribute('data-channel');
+                    if (storeId && channel) {
+                        this.model.trackStoreClick(storeId, channel);
+                    }
                 }
             });
         }
@@ -233,44 +299,61 @@ class NualaController {
     }
 
     /**
-     * Configura eventos del Panel de Administración ("Estricto y Hábil")
+     * Configura eventos del Panel Administrativo protegido por sesión y CSRF.
      */
     setupAdminPanelEvents() {
         const btnOpenAdmin = document.getElementById('btn-open-admin');
         const linkOpenAdmin = document.getElementById('link-open-admin');
         const btnCloseAdmin = document.getElementById('btn-close-admin');
+        const btnClosePin = document.getElementById('btn-close-pin');
         const btnClosePinModal = document.getElementById('btn-close-pin-modal');
+        const btnLogoutAdmin = document.getElementById('btn-logout-admin');
         const adminModal = document.getElementById('admin-modal');
         const adminPinModal = document.getElementById('admin-pin-modal');
         const formAdminPin = document.getElementById('form-admin-pin');
+        const adminStoreSearch = document.getElementById('admin-store-search-input');
 
-        // Apertura estricta: Solicita PIN
         const handleOpenAdminClick = (e) => {
             if (e) e.preventDefault();
-            this.view.openPinModal();
+            if (this.model.isAdminAuthenticated) {
+                this.refreshStoresData();
+                this.view.renderAuditLogs(this.model.getAuditLogs());
+                this.view.openAdminModal();
+            } else {
+                this.view.openPinModal();
+            }
         };
 
         if (btnOpenAdmin) btnOpenAdmin.addEventListener('click', handleOpenAdminClick);
         if (linkOpenAdmin) linkOpenAdmin.addEventListener('click', handleOpenAdminClick);
 
-        // Validación de PIN
         if (formAdminPin) {
             formAdminPin.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const pinInput = document.getElementById('admin-pin-input').value;
-                const isValid = await this.model.verifyAdminPin(pinInput);
-                
-                if (isValid) {
+                const authResult = await this.model.verifyAdminPin(pinInput);
+
+                if (authResult.success) {
+                    this.refreshStoresData();
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
                     this.view.openAdminModal();
-                    this.view.showToast('Acceso concedido al panel de configuración.', 'success');
+                    this.view.showToast(authResult.message, 'success');
                 } else {
-                    this.view.showToast('PIN de seguridad incorrecto. Acceso denegado.', 'error');
+                    this.view.showToast(authResult.message, 'error');
                 }
             });
         }
 
-        // Cierre de modales
+        if (btnLogoutAdmin) {
+            btnLogoutAdmin.addEventListener('click', async () => {
+                await this.model.logoutAdmin();
+                this.view.closeAdminModal();
+                this.view.showToast('Sesión administrativa cerrada de forma segura.', 'info');
+            });
+        }
+
         if (btnCloseAdmin) btnCloseAdmin.addEventListener('click', () => this.view.closeAdminModal());
+        if (btnClosePin) btnClosePin.addEventListener('click', () => this.view.closePinModal());
         if (btnClosePinModal) btnClosePinModal.addEventListener('click', () => this.view.closePinModal());
 
         if (adminModal) {
@@ -284,7 +367,6 @@ class NualaController {
             });
         }
 
-        // Pestañas
         this.view.tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetTabId = btn.getAttribute('data-tab');
@@ -292,7 +374,15 @@ class NualaController {
             });
         });
 
-        // Formulario: Añadir Producto/Prenda
+        if (adminStoreSearch) {
+            adminStoreSearch.addEventListener('input', () => {
+                this.adminSearchQuery = adminStoreSearch.value.trim();
+                const filteredAdminStores = this.model.filterAdminStores(this.adminSearchQuery);
+                this.view.renderAdminStoresList(filteredAdminStores);
+            });
+        }
+
+        // Formulario: Añadir Producto/Prenda (especificando Docena o Unidad)
         const formAddProduct = document.getElementById('form-add-product');
         if (formAddProduct) {
             formAddProduct.addEventListener('submit', async (e) => {
@@ -301,16 +391,26 @@ class NualaController {
                     name: document.getElementById('product-name').value.trim(),
                     category: document.getElementById('product-category').value,
                     price: document.getElementById('product-price').value.trim(),
+                    unitType: document.getElementById('product-unit')?.value || 'Docena',
                     description: document.getElementById('product-description').value.trim(),
                     image: document.getElementById('product-image').value.trim()
                 };
 
-                await this.model.addProduct(newProductData);
-                this.refreshProductsData();
-                formAddProduct.reset();
-                document.getElementById('product-image').value = 'assets/images/lenceria-femenina.webp';
-                document.getElementById('product-image-preview').src = 'assets/images/lenceria-femenina.webp';
-                this.view.showToast('Prenda añadida al carrusel exitosamente.', 'success');
+                const result = await this.model.addProduct(newProductData);
+                if (!this.handleAuthResultCheck(result)) return;
+
+                if (result && result.success) {
+                    this.refreshProductsData();
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
+                    formAddProduct.reset();
+                    const unitSelect = document.getElementById('product-unit');
+                    if (unitSelect) unitSelect.value = 'Docena';
+                    document.getElementById('product-image').value = 'assets/images/lenceria-femenina.webp';
+                    document.getElementById('product-image-preview').src = 'assets/images/lenceria-femenina.webp';
+                    this.view.showToast('Prenda añadida al carrusel exitosamente.', 'success');
+                } else {
+                    this.view.showToast(result?.message || 'Error al registrar prenda.', 'error');
+                }
             });
         }
 
@@ -321,34 +421,55 @@ class NualaController {
                 e.preventDefault();
                 const waActiveInput = document.getElementById('store-whatsapp-active');
                 const igActiveInput = document.getElementById('store-instagram-active');
+                const tkActiveInput = document.getElementById('store-tiktok-active');
+                const mapsActiveInput = document.getElementById('store-maps-active');
+                const casheaActiveInput = document.getElementById('store-cashea-active');
+                const storeActiveInput = document.getElementById('store-active');
 
                 const newStoreData = {
                     name: document.getElementById('store-name').value.trim(),
                     city: document.getElementById('store-city').value.trim(),
                     state: document.getElementById('store-state').value.trim(),
                     address: document.getElementById('store-address').value.trim(),
-                    phone: document.getElementById('store-phone').value.trim(),
-                    whatsapp: document.getElementById('store-whatsapp') ? document.getElementById('store-whatsapp').value.trim() : '',
-                    whatsapp_active: waActiveInput ? (waActiveInput.checked ? 1 : 0) : 1,
-                    instagram: document.getElementById('store-instagram') ? document.getElementById('store-instagram').value.trim() : '',
-                    instagram_active: igActiveInput ? (igActiveInput.checked ? 1 : 0) : 1,
+                    phone: '',
+                    whatsapp: document.getElementById('store-whatsapp')?.value.trim() || '',
+                    whatsappActive: waActiveInput ? (waActiveInput.checked ? 1 : 0) : 1,
+                    instagram: document.getElementById('store-instagram')?.value.trim() || '',
+                    instagramActive: igActiveInput ? (igActiveInput.checked ? 1 : 0) : 1,
+                    tiktok: document.getElementById('store-tiktok')?.value.trim() || '',
+                    tiktokActive: tkActiveInput ? (tkActiveInput.checked ? 1 : 0) : 1,
+                    mapsUrl: document.getElementById('store-maps-url')?.value.trim() || '',
+                    mapsActive: mapsActiveInput ? (mapsActiveInput.checked ? 1 : 0) : 1,
+                    casheaActive: casheaActiveInput ? (casheaActiveInput.checked ? 1 : 0) : 0,
+                    saleType: document.getElementById('store-sale-type')?.value || 'Detal',
+                    storeActive: storeActiveInput ? (storeActiveInput.checked ? 1 : 0) : 1,
                     schedule: document.getElementById('store-schedule').value.trim(),
                     image: document.getElementById('store-image').value.trim()
                 };
 
-                await this.model.addStore(newStoreData);
-                this.refreshFilterBar();
-                this.refreshStoresData();
-                formAddStore.reset();
-                if (waActiveInput) waActiveInput.checked = true;
-                if (igActiveInput) igActiveInput.checked = true;
-                document.getElementById('store-image').value = 'assets/images/tienda-nuala.webp';
-                document.getElementById('store-image-preview').src = 'assets/images/tienda-nuala.webp';
-                this.view.showToast('Tienda registrada exitosamente.', 'success');
+                const result = await this.model.addStore(newStoreData);
+                if (!this.handleAuthResultCheck(result)) return;
+
+                if (result && result.success) {
+                    this.refreshFilterBar();
+                    this.refreshStoresData();
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
+                    formAddStore.reset();
+                    if (waActiveInput) waActiveInput.checked = true;
+                    if (igActiveInput) igActiveInput.checked = true;
+                    if (tkActiveInput) tkActiveInput.checked = true;
+                    if (mapsActiveInput) mapsActiveInput.checked = true;
+                    if (storeActiveInput) storeActiveInput.checked = true;
+                    document.getElementById('store-image').value = 'assets/images/tienda-nuala.webp';
+                    document.getElementById('store-image-preview').src = 'assets/images/tienda-nuala.webp';
+                    this.view.showToast('Tienda registrada exitosamente.', 'success');
+                } else {
+                    this.view.showToast(result?.message || 'Error al guardar tienda.', 'error');
+                }
             });
         }
 
-        // Delegación de eventos en lista de prendas (Editar / Eliminar)
+        // Delegación de eventos en lista de prendas
         if (this.view.adminProductsList) {
             this.view.adminProductsList.addEventListener('click', async (e) => {
                 const editBtn = e.target.closest('.btn-edit-product');
@@ -361,42 +482,60 @@ class NualaController {
                 } else if (deleteBtn) {
                     const productId = deleteBtn.getAttribute('data-id');
                     if (confirm('¿Estás seguro de eliminar esta prenda del carrusel?')) {
-                        await this.model.deleteProduct(productId);
-                        this.refreshProductsData();
-                        this.view.showToast('Prenda eliminada del carrusel.', 'info');
+                        const result = await this.model.deleteProduct(productId);
+                        if (!this.handleAuthResultCheck(result)) return;
+                        if (result && result.success) {
+                            this.refreshProductsData();
+                            this.view.renderAuditLogs(this.model.getAuditLogs());
+                            this.view.showToast('Prenda eliminada del carrusel.', 'info');
+                        }
                     }
                 }
             });
         }
 
-        // Delegación de eventos en lista de tiendas (Editar / Eliminar)
+        // Delegación de eventos en lista de tiendas (Pausar/Publicar, Editar, Eliminar)
         if (this.view.adminStoresList) {
             this.view.adminStoresList.addEventListener('click', async (e) => {
+                const toggleBtn = e.target.closest('.btn-toggle-store');
                 const editBtn = e.target.closest('.btn-edit-store');
                 const deleteBtn = e.target.closest('.btn-delete-store');
 
-                if (editBtn) {
+                if (toggleBtn) {
+                    const storeId = toggleBtn.getAttribute('data-id');
+                    const currentActive = parseInt(toggleBtn.getAttribute('data-active'), 10) === 1;
+                    const result = await this.model.toggleStoreStatus(storeId, !currentActive);
+                    if (!this.handleAuthResultCheck(result)) return;
+
+                    if (result && result.success) {
+                        this.refreshFilterBar();
+                        this.refreshStoresData();
+                        this.view.renderAuditLogs(this.model.getAuditLogs());
+                        this.view.showToast(result.message, 'info');
+                    }
+                } else if (editBtn) {
                     const storeId = editBtn.getAttribute('data-id');
                     const store = this.model.getStoreById(storeId);
                     if (store) this.view.openEditStoreModal(store);
                 } else if (deleteBtn) {
                     const storeId = deleteBtn.getAttribute('data-id');
-                    if (confirm('¿Estás seguro de eliminar esta tienda física?')) {
-                        const stores = this.model.getStores();
-                        const storeToDelete = stores.find(s => s.id === parseInt(storeId));
-                        
-                        await this.model.deleteStore(storeId);
+                    if (confirm('¿Estás seguro de eliminar permanentemente esta tienda física?')) {
+                        const storeToDelete = this.model.getStoreById(storeId);
+                        const result = await this.model.deleteStore(storeId);
+                        if (!this.handleAuthResultCheck(result)) return;
 
-                        if (storeToDelete) {
-                            const remainingInState = this.model.getStoresByState(storeToDelete.state);
-                            if (remainingInState.length === 0 && this.activeStateFilter.toLowerCase() === storeToDelete.state.toLowerCase()) {
-                                this.activeStateFilter = 'Todas';
+                        if (result && result.success) {
+                            if (storeToDelete) {
+                                const remainingInState = this.model.filterStores({ state: storeToDelete.state });
+                                if (remainingInState.length === 0 && normalizeComparableText(this.activeStateFilter) === normalizeComparableText(storeToDelete.state)) {
+                                    this.activeStateFilter = 'Todas';
+                                }
                             }
+                            this.refreshFilterBar();
+                            this.refreshStoresData();
+                            this.view.renderAuditLogs(this.model.getAuditLogs());
+                            this.view.showToast('Tienda eliminada.', 'info');
                         }
-
-                        this.refreshFilterBar();
-                        this.refreshStoresData();
-                        this.view.showToast('Tienda eliminada.', 'info');
                     }
                 }
             });
@@ -404,7 +543,7 @@ class NualaController {
     }
 
     /**
-     * Configura el formulario para actualizar contextos del Hero y dimensiones de carrusel
+     * Configura el formulario para actualizar configuración general y seguridad.
      */
     setupHeroFormEvents() {
         const formEditHero = document.getElementById('form-edit-hero');
@@ -418,22 +557,12 @@ class NualaController {
                 const fitVal = document.getElementById('carousel-fit-input')?.value.trim() || 'cover';
                 const pinVal = document.getElementById('admin-pin-change-input')?.value.trim() || '';
 
-                // Valores de la sección Cerca de ti (Expansión Nacional)
                 const statsTaglineVal = document.getElementById('stats-tagline-input')?.value.trim() || 'Cerca de ti';
                 const statsNumberVal = document.getElementById('stats-number-input')?.value.trim() || '+30';
                 const statsHeadingVal = document.getElementById('stats-heading-input')?.value.trim() || 'Tiendas en todo el país';
                 const statsTextVal = document.getElementById('stats-text-input')?.value.trim() || '';
                 const statsButtonVal = document.getElementById('stats-button-input')?.value.trim() || 'Explorar Tiendas';
                 const statsBgImageVal = document.getElementById('stats-bg-image')?.value.trim() || 'assets/images/tienda-nuala.jpg';
-
-                // Flags de visibilidad (Mostrar / Ocultar)
-                const statsSectionActiveVal = document.getElementById('stats-section-active')?.checked ? '1' : '0';
-                const statsBgActiveVal = document.getElementById('stats-bg-active')?.checked ? '1' : '0';
-                const statsTaglineActiveVal = document.getElementById('stats-tagline-active')?.checked ? '1' : '0';
-                const statsNumberActiveVal = document.getElementById('stats-number-active')?.checked ? '1' : '0';
-                const statsHeadingActiveVal = document.getElementById('stats-heading-active')?.checked ? '1' : '0';
-                const statsDescriptionActiveVal = document.getElementById('stats-description-active')?.checked ? '1' : '0';
-                const statsButtonActiveVal = document.getElementById('stats-button-active')?.checked ? '1' : '0';
 
                 const configsToSave = {
                     hero_title: titleVal,
@@ -447,32 +576,39 @@ class NualaController {
                     stats_description: statsTextVal,
                     stats_button_text: statsButtonVal,
                     stats_bg_image: statsBgImageVal,
-                    stats_section_active: statsSectionActiveVal,
-                    stats_bg_active: statsBgActiveVal,
-                    stats_tagline_active: statsTaglineActiveVal,
-                    stats_number_active: statsNumberActiveVal,
-                    stats_heading_active: statsHeadingActiveVal,
-                    stats_description_active: statsDescriptionActiveVal,
-                    stats_button_active: statsButtonActiveVal
+                    stats_section_active: document.getElementById('stats-section-active')?.checked ? '1' : '0',
+                    stats_bg_active: document.getElementById('stats-bg-active')?.checked ? '1' : '0',
+                    stats_tagline_active: document.getElementById('stats-tagline-active')?.checked ? '1' : '0',
+                    stats_number_active: document.getElementById('stats-number-active')?.checked ? '1' : '0',
+                    stats_heading_active: document.getElementById('stats-heading-active')?.checked ? '1' : '0',
+                    stats_description_active: document.getElementById('stats-description-active')?.checked ? '1' : '0',
+                    stats_button_active: document.getElementById('stats-button-active')?.checked ? '1' : '0'
                 };
 
-                if (pinVal && pinVal.length >= 4) {
+                if (pinVal) {
+                    if (pinVal.length < 4) {
+                        this.view.showToast('El nuevo PIN debe tener al menos 4 caracteres.', 'error');
+                        return;
+                    }
                     configsToSave.admin_pin = pinVal;
                 }
 
-                const updatedConfig = await this.model.saveConfig(configsToSave);
-                this.view.renderGeneralConfig(updatedConfig);
-                
-                const pinChangeInput = document.getElementById('admin-pin-change-input');
-                if (pinChangeInput) pinChangeInput.value = '';
-                this.view.showToast('Configuración general y opciones de visibilidad guardadas con éxito.', 'success');
+                const result = await this.model.saveConfig(configsToSave);
+                if (!this.handleAuthResultCheck(result)) return;
+
+                if (result && result.success) {
+                    this.view.renderGeneralConfig(this.model.getConfig());
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
+                    const pinChangeInput = document.getElementById('admin-pin-change-input');
+                    if (pinChangeInput) pinChangeInput.value = '';
+                    this.view.showToast('Configuración general guardada con éxito.', 'success');
+                } else {
+                    this.view.showToast(result?.message || 'Error al guardar configuración.', 'error');
+                }
             });
         }
     }
 
-    /**
-     * Configura el modal y formulario para EDITAR una prenda/diapositiva del carrusel.
-     */
     setupEditProductModalEvents() {
         const btnClose = document.getElementById('btn-close-edit-product');
         const formEditProduct = document.getElementById('form-edit-product');
@@ -489,21 +625,26 @@ class NualaController {
                     name: document.getElementById('edit-product-name').value.trim(),
                     category: document.getElementById('edit-product-category').value,
                     price: document.getElementById('edit-product-price').value.trim(),
+                    unitType: document.getElementById('edit-product-unit')?.value || 'Docena',
                     description: document.getElementById('edit-product-description').value.trim(),
                     image: document.getElementById('edit-product-image').value.trim()
                 };
 
-                await this.model.updateProduct(productId, updatedData);
-                this.view.closeEditProductModal();
-                this.refreshProductsData();
-                this.view.showToast('Prenda e imagen actualizadas correctamente.', 'success');
+                const result = await this.model.updateProduct(productId, updatedData);
+                if (!this.handleAuthResultCheck(result)) return;
+
+                if (result && result.success) {
+                    this.view.closeEditProductModal();
+                    this.refreshProductsData();
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
+                    this.view.showToast('Prenda actualizada correctamente.', 'success');
+                } else {
+                    this.view.showToast(result?.message || 'Error al actualizar prenda.', 'error');
+                }
             });
         }
     }
 
-    /**
-     * Configura el modal y formulario para EDITAR una tienda y sus direcciones/imágenes.
-     */
     setupEditStoreModalEvents() {
         const btnClose = document.getElementById('btn-close-edit-store');
         const formEditStore = document.getElementById('form-edit-store');
@@ -518,44 +659,61 @@ class NualaController {
                 const storeId = document.getElementById('edit-store-id').value;
                 const waActiveInput = document.getElementById('edit-store-whatsapp-active');
                 const igActiveInput = document.getElementById('edit-store-instagram-active');
+                const tkActiveInput = document.getElementById('edit-store-tiktok-active');
+                const mapsActiveInput = document.getElementById('edit-store-maps-active');
+                const casheaActiveInput = document.getElementById('edit-store-cashea-active');
+                const storeActiveInput = document.getElementById('edit-store-active');
 
                 const updatedData = {
                     name: document.getElementById('edit-store-name').value.trim(),
                     city: document.getElementById('edit-store-city').value.trim(),
                     state: document.getElementById('edit-store-state').value.trim(),
                     address: document.getElementById('edit-store-address').value.trim(),
-                    phone: document.getElementById('edit-store-phone').value.trim(),
-                    whatsapp: document.getElementById('edit-store-whatsapp') ? document.getElementById('edit-store-whatsapp').value.trim() : '',
-                    whatsapp_active: waActiveInput ? (waActiveInput.checked ? 1 : 0) : 1,
-                    instagram: document.getElementById('edit-store-instagram') ? document.getElementById('edit-store-instagram').value.trim() : '',
-                    instagram_active: igActiveInput ? (igActiveInput.checked ? 1 : 0) : 1,
+                    phone: '',
+                    whatsapp: document.getElementById('edit-store-whatsapp')?.value.trim() || '',
+                    whatsappActive: waActiveInput ? (waActiveInput.checked ? 1 : 0) : 1,
+                    instagram: document.getElementById('edit-store-instagram')?.value.trim() || '',
+                    instagramActive: igActiveInput ? (igActiveInput.checked ? 1 : 0) : 1,
+                    tiktok: document.getElementById('edit-store-tiktok')?.value.trim() || '',
+                    tiktokActive: tkActiveInput ? (tkActiveInput.checked ? 1 : 0) : 1,
+                    mapsUrl: document.getElementById('edit-store-maps-url')?.value.trim() || '',
+                    mapsActive: mapsActiveInput ? (mapsActiveInput.checked ? 1 : 0) : 1,
+                    casheaActive: casheaActiveInput ? (casheaActiveInput.checked ? 1 : 0) : 0,
+                    saleType: document.getElementById('edit-store-sale-type')?.value || 'Detal',
+                    storeActive: storeActiveInput ? (storeActiveInput.checked ? 1 : 0) : 1,
                     schedule: document.getElementById('edit-store-schedule').value.trim(),
                     image: document.getElementById('edit-store-image').value.trim()
                 };
 
-                await this.model.updateStore(storeId, updatedData);
-                this.view.closeEditStoreModal();
-                this.refreshFilterBar();
-                this.refreshStoresData();
-                this.view.showToast('Tienda, dirección e imagen actualizadas correctamente.', 'success');
+                const result = await this.model.updateStore(storeId, updatedData);
+                if (!this.handleAuthResultCheck(result)) return;
+
+                if (result && result.success) {
+                    this.view.closeEditStoreModal();
+                    this.refreshFilterBar();
+                    this.refreshStoresData();
+                    this.view.renderAuditLogs(this.model.getAuditLogs());
+                    this.view.showToast('Tienda, dirección y canales actualizados correctamente.', 'success');
+                } else {
+                    this.view.showToast(result?.message || 'Error al actualizar tienda.', 'error');
+                }
             });
         }
     }
 
-    /**
-     * Sincroniza la vista de tiendas en base al filtro seleccionado
-     */
     refreshStoresData() {
-        const filteredStores = this.model.getStoresByState(this.activeStateFilter);
-        this.view.renderStores(filteredStores);
-        
-        const allStores = this.model.getStores();
-        this.view.renderAdminStoresList(allStores);
+        const filteredStores = this.model.filterStores({
+            state: this.activeStateFilter,
+            searchQuery: this.searchQuery,
+            quickFilter: this.activeQuickFilter
+        });
+        const totalPublicStores = this.model.getStores().length;
+        this.view.renderStores(filteredStores, totalPublicStores);
+
+        const filteredAdminStores = this.model.filterAdminStores(this.adminSearchQuery);
+        this.view.renderAdminStoresList(filteredAdminStores);
     }
 
-    /**
-     * Sincroniza la vista de productos en la web
-     */
     refreshProductsData() {
         const products = this.model.getProducts();
         this.view.renderProducts(products);
@@ -563,7 +721,6 @@ class NualaController {
     }
 }
 
-// Inicialización cuando el DOM está completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     const model = new NualaModel();
     const view = new NualaView();

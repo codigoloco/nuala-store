@@ -1857,3 +1857,680 @@ button {
 
 
 
+
+/* =============================================================
+   MEJORAS UI/UX, OMNICANALIDAD, MODO NORMAL / MODO DARK SEGURO
+   ============================================================= */
+:root {
+    --color-surface: #ffffff;
+    --color-surface-elevated: #fdf8fb;
+    --color-header-bg: rgba(255, 255, 255, 0.92);
+    --color-badge-glass: rgba(255, 255, 255, 0.93);
+}
+
+html[data-theme="dark"] {
+    --color-bg: #131217;
+    --color-surface: #1d1b24;
+    --color-surface-elevated: #262330;
+    --color-primary-light: #241b22;
+    --color-secondary-light: #162928;
+    --color-text-main: #f6f3f5;
+    --color-text-muted: #b8b0ba;
+    --color-border: #332d3b;
+    --color-header-bg: rgba(19, 18, 23, 0.92);
+    --color-badge-glass: rgba(29, 27, 36, 0.92);
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --shadow-card: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+/* Adaptación controlada para superficies cuando data-theme="dark" está activo */
+.main-header {
+    background: var(--color-header-bg);
+    border-bottom-color: var(--color-border);
+}
+
+html[data-theme="dark"] .store-card,
+html[data-theme="dark"] .filter-btn,
+html[data-theme="dark"] .carousel-header-btn,
+html[data-theme="dark"] .admin-item-row,
+html[data-theme="dark"] .image-preview-container,
+html[data-theme="dark"] .upload-options-container,
+html[data-theme="dark"] .btn-crop-tool,
+html[data-theme="dark"] .form-group input,
+html[data-theme="dark"] .form-group select,
+html[data-theme="dark"] .form-group textarea {
+    background: var(--color-surface);
+    color: var(--color-text-main);
+    border-color: var(--color-border);
+}
+
+html[data-theme="dark"] .filter-btn.active {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-color: var(--color-primary);
+}
+
+html[data-theme="dark"] .carousel-header-btn:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-color: var(--color-primary);
+}
+
+html[data-theme="dark"] .store-badge {
+    background: var(--color-badge-glass);
+    color: var(--color-text-main);
+}
+
+html[data-theme="dark"] .carousel-control {
+    background: rgba(29, 27, 36, 0.85);
+    color: var(--color-text-main);
+}
+
+html[data-theme="dark"] .toast {
+    background: var(--color-surface-elevated);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
+}
+
+/* Botón de alternancia Modo Normal / Modo Dark */
+.theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-card);
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+/* Precio y Unidad de Venta (Docena / Unidad) en Carrusel de Productos */
+.carousel-price-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.carousel-unit-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(238, 150, 192, 0.92);
+    color: #ffffff;
+    font-family: var(--font-complementary);
+}
+
+/* Estados vacíos sin estilos inline quemados */
+.empty-state-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 48px 32px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.empty-state-content {
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.empty-state-content p {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    margin-top: 8px;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 14px;
+    color: var(--color-primary-dark);
+    display: block;
+}
+
+/* Buscador y Filtros Rápidos de Tiendas (30+ sedes / 17 estados) */
+.stores-discovery-toolbar {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.store-search-box {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.store-search-icon {
+    position: absolute;
+    left: 18px;
+    color: var(--color-primary-dark);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.store-search-input {
+    width: 100%;
+    padding: 13px 44px 13px 44px;
+    border-radius: 40px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    box-shadow: var(--shadow-card);
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+.store-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(238, 150, 192, 0.22);
+}
+
+.btn-clear-search {
+    display: none;
+    position: absolute;
+    right: 14px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--color-primary-light);
+    color: var(--color-text-main);
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+}
+
+.stores-quick-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.quick-mode-btn {
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-complementary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition-fast);
+}
+
+.quick-mode-btn:hover {
+    border-color: var(--color-secondary);
+    color: var(--color-text-main);
+}
+
+.quick-mode-btn.active {
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: #ffffff;
+}
+
+/* Optimización de la barra de 18 estados */
+.locations-filter-bar {
+    max-width: 1040px;
+    gap: 8px 10px;
+    margin-bottom: 18px;
+}
+
+.locations-filter-bar .filter-btn {
+    padding: 8px 18px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.stores-results-counter {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-complementary);
+    letter-spacing: 0.8px;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+/* Insignias Comerciales y Jerarquía de Acciones en Tarjeta de Tienda */
+.store-top-right-badges {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.store-sale-badge {
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: var(--font-complementary);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.badge-sale-detal {
+    background: rgba(231, 110, 170, 0.92);
+}
+
+.badge-sale-mayor {
+    background: rgba(26, 26, 26, 0.88);
+}
+
+.badge-sale-both {
+    background: rgba(63, 166, 158, 0.94);
+}
+
+.store-pill-cashea {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: #ffea00;
+    color: #151515;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-complementary);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.store-state-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--color-primary-dark);
+    margin-bottom: 4px;
+    font-family: var(--font-complementary);
+}
+
+.store-in-person-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 25px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    background: var(--color-primary-light);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-complementary);
+}
+
+.store-quick-links-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-store-quick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-elevated);
+    color: var(--color-text-main);
+    font-family: var(--font-complementary);
+    transition: var(--transition-fast);
+}
+
+.btn-store-maps {
+    flex: 1;
+}
+
+.btn-store-maps i {
+    color: #ea4335;
+}
+
+.btn-store-maps:hover {
+    border-color: var(--color-secondary);
+    background: var(--color-secondary-light);
+    transform: translateY(-2px);
+}
+
+.btn-store-ig-pill,
+.btn-store-tk-pill {
+    width: 36px;
+    padding: 0;
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+.btn-store-ig-pill i {
+    color: #e1306c;
+}
+
+.btn-store-ig-pill:hover {
+    background: linear-gradient(45deg, #f09433 0%, #dc2743 50%, #bc1888 100%);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-2px);
+}
+
+.btn-store-ig-pill:hover i {
+    color: #ffffff;
+}
+
+.btn-store-tk-pill:hover {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+    transform: translateY(-2px);
+}
+
+/* Complementos de Footer y Panel Administrativo */
+.footer-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.footer-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-text-main);
+    margin-bottom: 18px;
+    font-weight: 600;
+    font-family: var(--font-complementary);
+}
+
+.footer-links-group ul {
+    list-style: none;
+}
+
+.footer-links-group li {
+    margin-bottom: 10px;
+}
+
+.footer-links-group a {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.footer-links-group a:hover {
+    color: var(--color-primary-dark);
+}
+
+.footer-fiscal-badge {
+    margin-top: 14px;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-outline {
+    margin-top: 12px;
+    padding: 10px 20px;
+    border: 1px solid var(--color-primary-dark);
+    color: var(--color-primary-dark);
+    background: var(--color-surface);
+    font-size: 0.74rem;
+}
+
+.btn-outline:hover {
+    background: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+}
+
+.visitor-counter-widget {
+    margin-top: 14px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.visitor-counter-widget i {
+    color: var(--color-primary);
+}
+
+.visitor-counter-val {
+    color: var(--color-text-main);
+}
+
+.modal-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-logout-inline {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: #fdf2f2;
+    color: #c53929;
+    border: 1px solid rgba(197, 57, 41, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition-fast);
+}
+
+.btn-logout-inline:hover {
+    background: #c53929;
+    color: #ffffff;
+}
+
+.admin-section-divider {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+.stats-preview-thumb {
+    max-height: 140px;
+    object-fit: cover;
+}
+
+.cashea-toggle-box {
+    padding: 11px 14px;
+    border-radius: 8px;
+    justify-content: flex-start;
+}
+
+.icon-wa { color: #25D366; }
+.icon-ig { color: #E1306C; }
+.icon-maps { color: #EA4335; }
+
+.admin-list-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.admin-list-header-bar h3 {
+    margin-bottom: 0;
+}
+
+.admin-inline-search {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-main);
+    font-size: 0.78rem;
+    min-width: 210px;
+    outline: none;
+}
+
+.admin-inline-search:focus {
+    border-color: var(--color-primary);
+}
+
+.admin-item-paused {
+    opacity: 0.68;
+    border-style: dashed;
+}
+
+.admin-item-metrics {
+    margin-top: 6px;
+    font-size: 0.7rem;
+    color: var(--color-secondary-dark);
+}
+
+.admin-price-highlight {
+    color: var(--color-primary-dark);
+}
+
+.admin-empty-msg {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    padding: 24px;
+}
+
+.admin-social-tag.tag-status-on {
+    background: rgba(19, 115, 51, 0.12);
+    color: #137333;
+    border: 1px solid rgba(19, 115, 51, 0.25);
+}
+
+.admin-social-tag.tag-sale {
+    background: rgba(83, 194, 186, 0.14);
+    color: var(--color-secondary-dark);
+    border: 1px solid rgba(83, 194, 186, 0.35);
+}
+
+.admin-social-tag.tag-cashea {
+    background: rgba(255, 214, 0, 0.22);
+    color: #8f6b00;
+    border: 1px solid rgba(255, 214, 0, 0.5);
+}
+
+.admin-social-tag.tag-tk {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
+}
+
+.admin-social-tag.tag-maps {
+    background: rgba(234, 67, 53, 0.1);
+    color: #c53929;
+    border: 1px solid rgba(234, 67, 53, 0.25);
+}
+
+.admin-social-tag.tag-audit-denied {
+    background: rgba(217, 48, 37, 0.12);
+    color: #c53929;
+    border: 1px solid rgba(217, 48, 37, 0.3);
+}
+
+/* Bitácora de Auditoría */
+.admin-audit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.btn-compact-link {
+    padding: 9px 18px;
+    font-size: 0.72rem;
+}
+
+.admin-audit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 52vh;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.admin-audit-row {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+}
+
+.audit-row-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.audit-module-label {
+    color: var(--color-text-muted);
+    font-size: 0.74rem;
+}
+
+.audit-date-label {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-complementary);
+}
+
+/* Scroll horizontal táctil para chips de estados en móviles */
+@media (max-width: 768px) {
+    .locations-filter-bar {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 4px 6px 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    .locations-filter-bar .filter-btn {
+        flex: 0 0 auto;
+    }
+}

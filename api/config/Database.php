@@ -2,6 +2,7 @@
 /**
  * Clase Singleton para gestionar la conexión a SQLite3 mediante PDO.
  * Sigue el principio de Responsabilidad Única (SRP) y Patrón Singleton (SOLID).
+ * Variables en snake_case.
  */
 class Database {
     private static $instance = null;
@@ -17,6 +18,10 @@ class Database {
         $this->pdo = new PDO('sqlite:' . $db_path);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+        // Mejorar concurrencia e integridad en SQLite3
+        $this->pdo->exec('PRAGMA foreign_keys = ON;');
+        $this->pdo->exec('PRAGMA journal_mode = WAL;');
 
         $this->init_tables();
     }
@@ -39,10 +44,619 @@ class Database {
     }
 
     /**
-     * Inicializa las tablas y migra datos por defecto si la BD es recién creada.
+     * Catálogo oficial depurado de las 30 tiendas NUALA en 17 estados.
+     * Centralizado en un único método para evitar duplicación de datos (DRY).
+     */
+    public static function get_official_stores_catalog() {
+        return [
+            [
+                'name' => 'Nuala Catia III',
+                'city' => 'Caracas',
+                'state' => 'Distrito Capital',
+                'address' => 'Boulevard de Catia, Av. España, frente a Perfumes Factory, Caracas.',
+                'phone' => '',
+                'whatsapp' => '',
+                'whatsapp_active' => 0,
+                'instagram' => '@nuala.catia1',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.catia.1',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.google.com/maps?q=10.511477,-66.9470344&z=17&hl=es',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Catia II',
+                'city' => 'Caracas',
+                'state' => 'Distrito Capital',
+                'address' => 'Boulevard de Catia, entre la 2da. y 3ra. Avenida, al lado de La Casa del Perfume, Caracas.',
+                'phone' => '',
+                'whatsapp' => '',
+                'whatsapp_active' => 0,
+                'instagram' => '@nuala.catia2',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.catia.2',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.google.com/maps/search/La%20Casa%20del%20Perfume%20Catia/@10.51216552,-66.94706612,17z?hl=es',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala La Hoyada (Detal)',
+                'city' => 'Caracas',
+                'state' => 'Distrito Capital',
+                'address' => 'Av. Cují, esquina Salvador de León, a media cuadra del Metro La Hoyada en dirección Av. Urdaneta, diagonal al Tijerazo y frente a tienda Wax, Caracas.',
+                'phone' => '',
+                'whatsapp' => '04149021586',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.lahoyada',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.hoyada',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/n6PMRtVfZMpYRsfM7',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Sabana Grande',
+                'city' => 'Caracas',
+                'state' => 'Distrito Capital',
+                'address' => 'Boulevard de Sabana Grande, al lado de la Prefectura de Sabana Grande, Caracas.',
+                'phone' => '',
+                'whatsapp' => '04142855982',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.sabanagrande',
+                'instagram_active' => 1,
+                'tiktok' => '@nualasabanagrande',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/hPUKmvhZfNbKRVbw6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala La Hoyada (Mayor)',
+                'city' => 'Caracas',
+                'state' => 'Distrito Capital',
+                'address' => 'Av. Cují con esquina Salvador de León, diagonal a la tienda Wrangler, La Hoyada, Caracas.',
+                'phone' => '',
+                'whatsapp' => '04120239438',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.mayor',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.mayorccs',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/Wv3xKzcwmxSn3Cte7',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Mayor',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 8:30 AM - 6:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Maracay I',
+                'city' => 'Maracay',
+                'state' => 'Aragua',
+                'address' => 'Av. Bolívar, frente a Mundo Total, Maracay.',
+                'phone' => '',
+                'whatsapp' => '04220045196',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.mcy',
+                'instagram_active' => 1,
+                'tiktok' => '@nualamaracay',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/nz4roXGdv3HrG2vU6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Maracay II',
+                'city' => 'Maracay',
+                'state' => 'Aragua',
+                'address' => 'Av. Bolívar Oeste, diagonal al Boulevard Pérez Almarza, al lado de Ovejita, Maracay.',
+                'phone' => '',
+                'whatsapp' => '',
+                'whatsapp_active' => 0,
+                'instagram' => '@nualamaracay',
+                'instagram_active' => 1,
+                'tiktok' => '',
+                'tiktok_active' => 0,
+                'maps_url' => 'https://maps.app.goo.gl/tvkEWh6ZSX9r7MWQA',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala La Victoria I',
+                'city' => 'La Victoria',
+                'state' => 'Aragua',
+                'address' => 'Av. Francisco de Loreto, cruce con calle Libertador, antigua Zapatería La Elegancia, La Victoria.',
+                'phone' => '',
+                'whatsapp' => '04226445657',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala_lavictoria1',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.lavictoria1',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/eqLPN2d8JLKhGuqx7',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala La Victoria II',
+                'city' => 'La Victoria',
+                'state' => 'Aragua',
+                'address' => 'Av. Francisco de Loreto con calle Campo Elías, frente a la plaza, al lado de Farmacias SAAS, La Victoria.',
+                'phone' => '',
+                'whatsapp' => '04220074949',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.lavictoria2',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.lavictoria2',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/mW6KYU9E2rTmwtmP7',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Puerto La Cruz',
+                'city' => 'Puerto La Cruz',
+                'state' => 'Anzoátegui',
+                'address' => 'Calle Sucre con Av. 5 de Julio, Edificio Ely Cohen, Puerto La Cruz.',
+                'phone' => '',
+                'whatsapp' => '04128667330',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.puertolacruz',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.puertolacruz',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/28fqohGtMav1bEcs5',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Mayor y Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Barinas',
+                'city' => 'Barinas',
+                'state' => 'Barinas',
+                'address' => 'Av. Medina Jiménez con calle Camejo, diagonal a la Plaza del Estudiante, al lado de El Castillo, Barinas.',
+                'phone' => '',
+                'whatsapp' => '04129741073',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualabarinas',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.barinas',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/4xNkToLmYQPGcSER6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala San Félix',
+                'city' => 'San Félix',
+                'state' => 'Bolívar',
+                'address' => 'Calle Ramírez, sector Centro, frente al Palacio del Blumer, San Félix.',
+                'phone' => '',
+                'whatsapp' => '04120846599',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualasanfelix',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.sanfelix',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/DMzS3BBzPcjwj76y9',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Valencia I',
+                'city' => 'Valencia',
+                'state' => 'Carabobo',
+                'address' => 'Calle Díaz Moreno, diagonal a Banesco y al Banco de Venezuela, Centro, Valencia.',
+                'phone' => '',
+                'whatsapp' => '04127426679',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualavalencia',
+                'instagram_active' => 1,
+                'tiktok' => '@nualavalencia',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/XJepQw1kdHqa26M18',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Valencia II (Mayor)',
+                'city' => 'Valencia',
+                'state' => 'Carabobo',
+                'address' => 'Mercado Guajiro, calle 73, Urb. La Castellana, al lado del Palacio del Blumer, Valencia.',
+                'phone' => '',
+                'whatsapp' => '04242928284',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualavalenciamayor',
+                'instagram_active' => 1,
+                'tiktok' => '@nualavalenciamayor',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/3xRsjoDbhc3hjLQ3A',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Mayor',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 8:30 AM - 6:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Coro',
+                'city' => 'Coro',
+                'state' => 'Falcón',
+                'address' => 'Av. Manaure, frente a la Plaza Linares, antiguo Gina, Coro.',
+                'phone' => '',
+                'whatsapp' => '04246188886',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualacoro',
+                'instagram_active' => 1,
+                'tiktok' => '@nualacoroo',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/1zmF9JKgs4Gjrbpa8',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Punto Fijo',
+                'city' => 'Punto Fijo',
+                'state' => 'Falcón',
+                'address' => 'Av. Colombia, entre calles Garcés y Zamora, diagonal a la antigua línea de transporte La Responsable, Punto Fijo.',
+                'phone' => '',
+                'whatsapp' => '04121014597',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualapuntofijo',
+                'instagram_active' => 1,
+                'tiktok' => '@nualapuntofijo',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/BCx7TyrxfDZ41UJXA',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Barquisimeto',
+                'city' => 'Barquisimeto',
+                'state' => 'Lara',
+                'address' => 'Av. 20, entre calles 27 y 28, frente al antiguo Beco, Barquisimeto.',
+                'phone' => '',
+                'whatsapp' => '04125226694',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualabqto',
+                'instagram_active' => 1,
+                'tiktok' => '',
+                'tiktok_active' => 0,
+                'maps_url' => 'https://maps.app.goo.gl/YefKzc6BxY7SHv8U6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala La Guaira',
+                'city' => 'Maiquetía',
+                'state' => 'La Guaira',
+                'address' => 'Calle Cristo a Jefatura, sector Maiquetía, frente a la tienda Canguro, La Guaira.',
+                'phone' => '',
+                'whatsapp' => '04149225052',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.laguaira',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala_laguaira',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.google.com/maps?q=10.5956233,-66.9514873&z=17&hl=es',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala El Vigía',
+                'city' => 'El Vigía',
+                'state' => 'Mérida',
+                'address' => 'Calle 3 con Av. 13, al lado de la Librería Carmina, El Vigía.',
+                'phone' => '',
+                'whatsapp' => '04129526347',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala_elvigia',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala_elvigia',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/ghuBhpniE7fog1gB7',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Maturín I',
+                'city' => 'Maturín',
+                'state' => 'Monagas',
+                'address' => 'Av. Bolívar, sector Centro, frente a CANTV/Ipostel, al lado de Optiahorro, Maturín.',
+                'phone' => '',
+                'whatsapp' => '04126523280',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualamaturin',
+                'instagram_active' => 1,
+                'tiktok' => '@nualamaturin',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/z413avnj56YQfXA67',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Maturín II',
+                'city' => 'Maturín',
+                'state' => 'Monagas',
+                'address' => 'Av. Juncal con Av. Bolívar, antiguo Tejidos Fernández, Maturín.',
+                'phone' => '',
+                'whatsapp' => '04226825222',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.maturin2',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.maturin2',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/NAKr6UKNMDqyLxJN6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Santa Teresa',
+                'city' => 'Santa Teresa del Tuy',
+                'state' => 'Miranda',
+                'address' => 'Calle Ayacucho, entre Boulevard Libertador y calle El Carmen, Casco Central, al lado de Mundo Total, Santa Teresa del Tuy.',
+                'phone' => '',
+                'whatsapp' => '04242314388',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualasantateresa',
+                'instagram_active' => 1,
+                'tiktok' => '@nualasantateresa',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/oAPN3zWqsZg6feZ4A',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Charallave',
+                'city' => 'Charallave',
+                'state' => 'Miranda',
+                'address' => 'Av. Bolívar, sector Pueblo Abajo, al lado de La Casa del Perfume, Charallave.',
+                'phone' => '',
+                'whatsapp' => '04122993611',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala_charallave',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.charallave',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.google.com/maps?q=10.240075,-66.8586522&z=17&hl=es',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Acarigua',
+                'city' => 'Acarigua',
+                'state' => 'Portuguesa',
+                'address' => 'Av. Libertador con calle 29, frente a la Zapatería Maracaibo, Acarigua.',
+                'phone' => '',
+                'whatsapp' => '04245980110',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualaacarigua',
+                'instagram_active' => 1,
+                'tiktok' => '@nualaacarigua0',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/t3sqnvky9ekC1RKr6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Cumaná',
+                'city' => 'Cumaná',
+                'state' => 'Sucre',
+                'address' => 'Av. Bermúdez con calle Gutiérrez, frente al Banco Mercantil, Cumaná.',
+                'phone' => '',
+                'whatsapp' => '04122084312',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala_cumana',
+                'instagram_active' => 1,
+                'tiktok' => '@nualacumana',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/ia5t6iKBcC5W4EmS6',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Valera',
+                'city' => 'Valera',
+                'state' => 'Trujillo',
+                'address' => 'Av. 10, entre calles 10 y 11, frente a Total Panda, al lado de Kazamarca, Valera.',
+                'phone' => '',
+                'whatsapp' => '04122927511',
+                'whatsapp_active' => 1,
+                'instagram' => '@nuala.valera',
+                'instagram_active' => 1,
+                'tiktok' => '@nuala.valera',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/cWToaQEYgZYJKJ3J9',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala San Felipe',
+                'city' => 'San Felipe',
+                'state' => 'Yaracuy',
+                'address' => '5ta. Avenida con calle Patria, frente a Daka, San Felipe.',
+                'phone' => '',
+                'whatsapp' => '04262972295',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualasanfelipe',
+                'instagram_active' => 1,
+                'tiktok' => '@nualasanfelipe',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/kWTfWp6FxRsUPoc68',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Maracaibo Galerías',
+                'city' => 'Maracaibo',
+                'state' => 'Zulia',
+                'address' => 'Av. La Limpia, C.C. Galerías Mall, Nivel Planta Baja, frente a la pista de hielo, Maracaibo.',
+                'phone' => '',
+                'whatsapp' => '04246139031',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualamcbogalerias',
+                'instagram_active' => 1,
+                'tiktok' => '@nualamcbogalerias',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/Uu7hmvyFzjdYuZdj8',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 10:00 AM - 8:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Maracaibo Plaza Lago',
+                'city' => 'Maracaibo',
+                'state' => 'Zulia',
+                'address' => 'Av. Libertador, C.C. Plaza Lago, Planta Baja, frente a Variedades Lima, Maracaibo.',
+                'phone' => '',
+                'whatsapp' => '04122530745',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualaplazalago',
+                'instagram_active' => 1,
+                'tiktok' => '@nualaplazalago2',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/9X1jKoBJtMSgKM61A',
+                'maps_active' => 1,
+                'cashea_active' => 1,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ],
+            [
+                'name' => 'Nuala Ciudad Ojeda',
+                'city' => 'Ciudad Ojeda',
+                'state' => 'Zulia',
+                'address' => 'Av. Bolívar, Edificio Gina, diagonal a Mundo Total, Ciudad Ojeda.',
+                'phone' => '',
+                'whatsapp' => '04246633766',
+                'whatsapp_active' => 1,
+                'instagram' => '@nualaojeda',
+                'instagram_active' => 1,
+                'tiktok' => '@nualaojeda0',
+                'tiktok_active' => 1,
+                'maps_url' => 'https://maps.app.goo.gl/PfZ6T6pvJJFcEivo6',
+                'maps_active' => 1,
+                'cashea_active' => 0,
+                'sale_type' => 'Detal',
+                'store_active' => 1,
+                'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM',
+                'image' => 'assets/images/tienda-nuala.webp'
+            ]
+        ];
+    }
+
+    /**
+     * Inicializa las tablas, ejecuta migraciones seguras e índices.
      */
     private function init_tables() {
-        // Tabla de configuración general (site_config)
+        // 1. Tabla de configuración general (site_config)
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS site_config (
                 config_key TEXT PRIMARY KEY,
@@ -51,20 +665,21 @@ class Database {
             )
         ");
 
-        // Tabla de carrusel (carousel_items)
+        // 2. Tabla de carrusel (carousel_items) con unidad de venta (Docena por defecto)
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS carousel_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 category TEXT NOT NULL,
                 price TEXT NOT NULL,
+                unit_type TEXT DEFAULT 'Docena',
                 description TEXT,
                 image TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
-        // Tabla de tiendas (stores)
+        // 3. Tabla de tiendas (stores) con campos omnicanal y de crecimiento
         $this->pdo->exec("
             CREATE TABLE IF NOT EXISTS stores (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,39 +687,103 @@ class Database {
                 city TEXT NOT NULL,
                 state TEXT NOT NULL,
                 address TEXT NOT NULL,
-                phone TEXT NOT NULL,
+                phone TEXT NOT NULL DEFAULT '',
                 schedule TEXT NOT NULL,
                 image TEXT NOT NULL,
                 whatsapp TEXT DEFAULT '',
                 whatsapp_active INTEGER DEFAULT 1,
                 instagram TEXT DEFAULT '',
                 instagram_active INTEGER DEFAULT 1,
+                tiktok TEXT DEFAULT '',
+                tiktok_active INTEGER DEFAULT 1,
+                maps_url TEXT DEFAULT '',
+                maps_active INTEGER DEFAULT 1,
+                cashea_active INTEGER DEFAULT 0,
+                sale_type TEXT DEFAULT 'Detal',
+                store_active INTEGER DEFAULT 1,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
-        // Migración automática de columnas whatsapp, instagram, whatsapp_active e instagram_active si no existen
+        // 4. Tabla obligatoria de auditoría (auditoria)
+        $this->pdo->exec("
+            CREATE TABLE IF NOT EXISTS auditoria (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                accion TEXT NOT NULL,
+                modulo TEXT NOT NULL,
+                entidad_id TEXT DEFAULT NULL,
+                detalle_anterior TEXT DEFAULT NULL,
+                detalle_nuevo TEXT DEFAULT NULL,
+                estatus TEXT NOT NULL DEFAULT 'EXITOSO',
+                ip_hash TEXT NOT NULL,
+                user_agent TEXT DEFAULT '',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // 5. Tabla de métricas de conversión por tienda (clics en WhatsApp, Maps, IG, TikTok)
+        $this->pdo->exec("
+            CREATE TABLE IF NOT EXISTS store_interactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                store_id INTEGER NOT NULL,
+                channel TEXT NOT NULL,
+                ip_hash TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Migración automática segura de columnas en carousel_items
+        try {
+            $item_cols_stmt = $this->pdo->query("PRAGMA table_info(carousel_items)");
+            $existing_item_cols = [];
+            while ($col = $item_cols_stmt->fetch()) {
+                $existing_item_cols[] = strtolower($col['name']);
+            }
+            if (!in_array('unit_type', $existing_item_cols)) {
+                $this->pdo->exec("ALTER TABLE carousel_items ADD COLUMN unit_type TEXT DEFAULT 'Docena'");
+                $this->pdo->exec("UPDATE carousel_items SET unit_type = 'Docena' WHERE unit_type IS NULL OR TRIM(unit_type) = ''");
+            }
+        } catch (Exception $e) {
+            // Silencioso si falla
+        }
+
+        // Migración automática segura de columnas en stores
         try {
             $columns_stmt = $this->pdo->query("PRAGMA table_info(stores)");
             $existing_columns = [];
             while ($col = $columns_stmt->fetch()) {
                 $existing_columns[] = strtolower($col['name']);
             }
-            if (!in_array('whatsapp', $existing_columns)) {
-                $this->pdo->exec("ALTER TABLE stores ADD COLUMN whatsapp TEXT DEFAULT ''");
-            }
-            if (!in_array('whatsapp_active', $existing_columns)) {
-                $this->pdo->exec("ALTER TABLE stores ADD COLUMN whatsapp_active INTEGER DEFAULT 1");
-            }
-            if (!in_array('instagram', $existing_columns)) {
-                $this->pdo->exec("ALTER TABLE stores ADD COLUMN instagram TEXT DEFAULT ''");
-            }
-            if (!in_array('instagram_active', $existing_columns)) {
-                $this->pdo->exec("ALTER TABLE stores ADD COLUMN instagram_active INTEGER DEFAULT 1");
+
+            $store_migrations = [
+                'whatsapp' => "ALTER TABLE stores ADD COLUMN whatsapp TEXT DEFAULT ''",
+                'whatsapp_active' => "ALTER TABLE stores ADD COLUMN whatsapp_active INTEGER DEFAULT 1",
+                'instagram' => "ALTER TABLE stores ADD COLUMN instagram TEXT DEFAULT ''",
+                'instagram_active' => "ALTER TABLE stores ADD COLUMN instagram_active INTEGER DEFAULT 1",
+                'tiktok' => "ALTER TABLE stores ADD COLUMN tiktok TEXT DEFAULT ''",
+                'tiktok_active' => "ALTER TABLE stores ADD COLUMN tiktok_active INTEGER DEFAULT 1",
+                'maps_url' => "ALTER TABLE stores ADD COLUMN maps_url TEXT DEFAULT ''",
+                'maps_active' => "ALTER TABLE stores ADD COLUMN maps_active INTEGER DEFAULT 1",
+                'cashea_active' => "ALTER TABLE stores ADD COLUMN cashea_active INTEGER DEFAULT 0",
+                'sale_type' => "ALTER TABLE stores ADD COLUMN sale_type TEXT DEFAULT 'Detal'",
+                'store_active' => "ALTER TABLE stores ADD COLUMN store_active INTEGER DEFAULT 1"
+            ];
+
+            foreach ($store_migrations as $col_name => $alter_sql) {
+                if (!in_array($col_name, $existing_columns)) {
+                    $this->pdo->exec($alter_sql);
+                }
             }
         } catch (Exception $e) {
             // Silencioso si falla la verificación
         }
+
+        // Creación de índices para escalabilidad y crecimiento
+        $this->pdo->exec("CREATE INDEX IF NOT EXISTS idx_stores_state ON stores(state)");
+        $this->pdo->exec("CREATE INDEX IF NOT EXISTS idx_stores_active ON stores(store_active)");
+        $this->pdo->exec("CREATE INDEX IF NOT EXISTS idx_stores_sale_type ON stores(sale_type)");
+        $this->pdo->exec("CREATE INDEX IF NOT EXISTS idx_auditoria_created ON auditoria(created_at DESC)");
+        $this->pdo->exec("CREATE INDEX IF NOT EXISTS idx_interactions_store ON store_interactions(store_id, channel)");
 
         // Migración de claves de configuración para sección de estadísticas si no existen
         try {
@@ -135,7 +814,32 @@ class Database {
             // Silencioso si falla
         }
 
+        // Asegurar que el PIN administrativo existente esté encriptado con password_hash
+        $this->upgrade_legacy_plaintext_pin();
+
         $this->seed_default_data_once();
+    }
+
+    /**
+     * Convierte automáticamente cualquier PIN antiguo en texto plano a hash seguro Bcrypt.
+     */
+    private function upgrade_legacy_plaintext_pin() {
+        try {
+            $stmt_pin = $this->pdo->prepare("SELECT config_value FROM site_config WHERE LOWER(config_key) = 'admin_pin'");
+            $stmt_pin->execute();
+            $row_pin = $stmt_pin->fetch();
+            if ($row_pin && !empty($row_pin['config_value'])) {
+                $raw_val = $row_pin['config_value'];
+                $hash_info = password_get_info($raw_val);
+                if (empty($hash_info['algo'])) {
+                    $hashed_pin = password_hash(trim($raw_val), PASSWORD_DEFAULT);
+                    $stmt_upd = $this->pdo->prepare("UPDATE site_config SET config_value = :val, updated_at = CURRENT_TIMESTAMP WHERE LOWER(config_key) = 'admin_pin'");
+                    $stmt_upd->execute([':val' => $hashed_pin]);
+                }
+            }
+        } catch (Exception $e) {
+            // Silencioso si falla
+        }
     }
 
     /**
@@ -143,7 +847,6 @@ class Database {
      * Si los elementos son eliminados por el usuario, NUNCA se vuelven a sembrar.
      */
     private function seed_default_data_once() {
-        // Verificar si la base de datos ya fue sembrada anteriormente
         $stmt_check_seed = $this->pdo->prepare("SELECT config_value FROM site_config WHERE LOWER(config_key) = 'is_db_seeded'");
         $stmt_check_seed->execute();
         $row_seed = $stmt_check_seed->fetch();
@@ -152,11 +855,10 @@ class Database {
             return;
         }
 
-        // Marcar inmediatamente como sembrada para evitar duplicaciones
         $stmt_mark_seeded = $this->pdo->prepare("INSERT OR REPLACE INTO site_config (config_key, config_value) VALUES ('is_db_seeded', '1')");
         $stmt_mark_seeded->execute();
 
-        // 1. Configuraciones iniciales
+        // 1. Configuraciones iniciales con PIN hasheado
         $default_configs = [
             'hero_title' => 'El arte de la intimidad',
             'hero_subtitle' => 'Colección Exclusiva',
@@ -176,7 +878,7 @@ class Database {
             'stats_heading_active' => '1',
             'stats_description_active' => '1',
             'stats_button_active' => '1',
-            'admin_pin' => '1234',
+            'admin_pin' => password_hash('1234', PASSWORD_DEFAULT),
             'is_db_seeded' => '1'
         ];
 
@@ -188,7 +890,7 @@ class Database {
             ]);
         }
 
-        // 2. Productos de carrusel por defecto (sólo si carousel_items está totalmente vacía en el sembrado inicial)
+        // 2. Productos de carrusel por defecto (especificando Docena según regla de negocio)
         $stmt_count_c = $this->pdo->query("SELECT COUNT(*) AS total FROM carousel_items");
         if ((int) $stmt_count_c->fetch()['total'] === 0) {
             $default_products = [
@@ -196,6 +898,7 @@ class Database {
                     'name' => 'Bralette Encaje Rosa',
                     'category' => 'Dama',
                     'price' => '$45.00',
+                    'unit_type' => 'Docena',
                     'image' => 'assets/images/lenceria-femenina.webp',
                     'description' => 'Encaje francés premium en color rosa empolvado'
                 ],
@@ -203,6 +906,7 @@ class Database {
                     'name' => 'Set Boxer Algodón Orgánico',
                     'category' => 'Caballero',
                     'price' => '$35.00',
+                    'unit_type' => 'Docena',
                     'image' => 'assets/images/lenceria-masculina.webp',
                     'description' => 'Algodón premium ultra suave en color verde salvia y gris'
                 ],
@@ -210,6 +914,7 @@ class Database {
                     'name' => 'Bralette Floral Pastel',
                     'category' => 'Dama',
                     'price' => '$42.00',
+                    'unit_type' => 'Docena',
                     'image' => 'assets/images/lenceria-femenina.webp',
                     'description' => 'Copas suaves de encaje con tirantes ajustables'
                 ],
@@ -217,52 +922,46 @@ class Database {
                     'name' => 'Classic Boxer Briefs',
                     'category' => 'Caballero',
                     'price' => '$38.00',
+                    'unit_type' => 'Docena',
                     'image' => 'assets/images/lenceria-masculina.webp',
                     'description' => 'Ajuste perfecto con banda elástica cepillada'
                 ]
             ];
 
             $stmt_insert_carousel = $this->pdo->prepare("
-                INSERT INTO carousel_items (name, category, price, description, image)
-                VALUES (:name, :category, :price, :description, :image)
+                INSERT INTO carousel_items (name, category, price, unit_type, description, image)
+                VALUES (:name, :category, :price, :unit_type, :description, :image)
             ");
             foreach ($default_products as $prod) {
                 $stmt_insert_carousel->execute([
                     ':name' => $prod['name'],
                     ':category' => $prod['category'],
                     ':price' => $prod['price'],
+                    ':unit_type' => $prod['unit_type'],
                     ':description' => $prod['description'],
                     ':image' => $prod['image']
                 ]);
             }
         }
 
-        // 3. Tiendas físicas por defecto (sólo si stores está totalmente vacía en el sembrado inicial)
+        // 3. Tiendas físicas oficiales (sólo si stores está totalmente vacía en el sembrado inicial)
         $stmt_count_s = $this->pdo->query("SELECT COUNT(*) AS total FROM stores");
         if ((int) $stmt_count_s->fetch()['total'] === 0) {
-            $default_stores = [
-                ['name' => 'Nuala La Hoyada', 'city' => 'Caracas', 'state' => 'Distrito Capital', 'address' => 'Av. Cují, esquina Salvador de León, frente a tienda Wax, Caracas.', 'phone' => '+58 (212) 541-2233', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Sabana Grande', 'city' => 'Caracas', 'state' => 'Distrito Capital', 'address' => 'Boulevard de Sabana Grande, frente a Mundo Total, Caracas.', 'phone' => '+58 (212) 762-4455', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Catia', 'city' => 'Caracas', 'state' => 'Distrito Capital', 'address' => 'Boulevard de Catia, calle Argentina, frente a Canguro, Caracas.', 'phone' => '+58 (212) 872-9900', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Chacao', 'city' => 'Caracas', 'state' => 'Miranda', 'address' => 'Calle Páez, Edif. Nuala, Planta Baja, Chacao.', 'phone' => '+58 (212) 267-1122', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Valencia Centro', 'city' => 'Valencia', 'state' => 'Carabobo', 'address' => 'Calle Díaz Moreno, diagonal al Banco Banesco y Banco de Venezuela, Valencia.', 'phone' => '+58 (241) 857-3344', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Mercado Guajiro', 'city' => 'Valencia', 'state' => 'Carabobo', 'address' => 'Mercado Guajiro, calle 73, Urb. La Castellana, al lado del Palacio del Blumer, Valencia.', 'phone' => '+58 (241) 859-6677', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Maracay Centro', 'city' => 'Maracay', 'state' => 'Aragua', 'address' => 'Av. Bolívar, frente a Mundo Total, Maracay.', 'phone' => '+58 (243) 246-8811', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala La Victoria', 'city' => 'La Victoria', 'state' => 'Aragua', 'address' => 'Av. Francisco de Loreto, cruce con calle Libertador, La Victoria.', 'phone' => '+58 (243) 412-5566', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Barquisimeto', 'city' => 'Barquisimeto', 'state' => 'Lara', 'address' => 'Av. 20 entre calles 27 y 28, zona centro, frente al CC Bequito, Barquisimeto.', 'phone' => '+58 (251) 233-4455', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Maiquetía', 'city' => 'Maiquetía', 'state' => 'La Guaira', 'address' => 'Calle El Cristo, frente a la tienda Canguro, Maiquetía.', 'phone' => '+58 (212) 331-5500', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Maturín', 'city' => 'Maturín', 'state' => 'Monagas', 'address' => 'Av. Bolívar, sector Centro, frente a la CANTV/Ipostel, Maturín.', 'phone' => '+58 (291) 641-7788', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Valera', 'city' => 'Valera', 'state' => 'Trujillo', 'address' => 'Av. 10, entre calles 10 y 11, frente a Total Panda, Valera.', 'phone' => '+58 (271) 221-3322', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Maracaibo', 'city' => 'Maracaibo', 'state' => 'Zulia', 'address' => 'Av. Bella Vista con calle 72, local Nuala, Maracaibo.', 'phone' => '+58 (261) 792-4411', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Puerto La Cruz', 'city' => 'Puerto La Cruz', 'state' => 'Anzoátegui', 'address' => 'Calle Libertad, cruce con Av. 5 de Julio, Puerto La Cruz.', 'phone' => '+58 (281) 265-3399', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp'],
-                ['name' => 'Nuala Puerto Ordaz', 'city' => 'Puerto Ordaz', 'state' => 'Bolívar', 'address' => 'Av. Las Américas, C.C. Orinokia Mall, Nivel Oro, Puerto Ordaz.', 'phone' => '+58 (286) 962-1100', 'schedule' => 'Lunes a Sábado: 9:00 AM - 7:00 PM', 'image' => 'assets/images/tienda-nuala.webp']
-            ];
-
+            $official_stores = self::get_official_stores_catalog();
             $stmt_insert_store = $this->pdo->prepare("
-                INSERT INTO stores (name, city, state, address, phone, schedule, image)
-                VALUES (:name, :city, :state, :address, :phone, :schedule, :image)
+                INSERT INTO stores (
+                    name, city, state, address, phone, schedule, image,
+                    whatsapp, whatsapp_active, instagram, instagram_active,
+                    tiktok, tiktok_active, maps_url, maps_active,
+                    cashea_active, sale_type, store_active
+                ) VALUES (
+                    :name, :city, :state, :address, :phone, :schedule, :image,
+                    :whatsapp, :whatsapp_active, :instagram, :instagram_active,
+                    :tiktok, :tiktok_active, :maps_url, :maps_active,
+                    :cashea_active, :sale_type, :store_active
+                )
             ");
-            foreach ($default_stores as $store) {
+            foreach ($official_stores as $store) {
                 $stmt_insert_store->execute([
                     ':name' => $store['name'],
                     ':city' => $store['city'],
@@ -270,7 +969,18 @@ class Database {
                     ':address' => $store['address'],
                     ':phone' => $store['phone'],
                     ':schedule' => $store['schedule'],
-                    ':image' => $store['image']
+                    ':image' => $store['image'],
+                    ':whatsapp' => $store['whatsapp'],
+                    ':whatsapp_active' => $store['whatsapp_active'],
+                    ':instagram' => $store['instagram'],
+                    ':instagram_active' => $store['instagram_active'],
+                    ':tiktok' => $store['tiktok'],
+                    ':tiktok_active' => $store['tiktok_active'],
+                    ':maps_url' => $store['maps_url'],
+                    ':maps_active' => $store['maps_active'],
+                    ':cashea_active' => $store['cashea_active'],
+                    ':sale_type' => $store['sale_type'],
+                    ':store_active' => $store['store_active']
                 ]);
             }
         }

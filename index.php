@@ -1,7 +1,7 @@
 <?php
 /**
- * index.php - Página principal del cliente (NUALA Store) integrada con Analítica Web y Heatmap.
- * Variables PHP en snake_Case y HTML en kebab-kase.
+ * index.php - Página principal del cliente (NUALA Store) integrada con Analítica Web, Heatmap y Directorio Nacional.
+ * Variables PHP en snake_case y atributos HTML en kebab-case.
  */
 
 declare(strict_types=1);
@@ -12,18 +12,18 @@ require_once __DIR__ . '/analitica/contador.php';
 $total_unique_visits = get_total_unique_visits();
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="normal">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="NUALA - Lencería exclusiva de dama y caballero. Diseños delicados y confort premium con envíos a todo el país. RIF: J505814567.">
+        content="NUALA - Lencería exclusiva de dama y caballero al mayor y detal. Más de 30 tiendas en toda Venezuela con disponibilidad Cashea. RIF: J505814567.">
     <title>NUALA | Ropa Íntima de Dama y Caballero</title>
     <!-- Favicon SVG integrado -->
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
-    <!-- Google Fonts con display=swap para evitar bloqueo -->
+    <!-- Google Fonts con display=swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -55,6 +55,12 @@ $total_unique_visits = get_total_unique_visits();
                 <a href="#stats-scene" class="nav-link">Nosotros</a>
                 <a href="#locations-scene" class="nav-link">Tiendas</a>
             </nav>
+            <div class="header-actions">
+                <button type="button" class="icon-button theme-toggle-btn" id="btn-theme-toggle"
+                    aria-label="Cambiar modo de visualización" title="Cambiar a modo oscuro">
+                    <i class="fa-regular fa-moon"></i>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -95,24 +101,22 @@ $total_unique_visits = get_total_unique_visits();
             <p class="stats-tagline" id="stats-tagline">Cerca de ti</p>
             <h2 class="stats-number" id="stats-main-number">+30</h2>
             <h3 class="stats-heading" id="stats-heading">Tiendas en todo el país</h3>
-            <p class="stats-text" id="stats-text">Llevamos el confort y la elegancia de NUALA a cada rincón de Venezuela. Encuentra tu
-                boutique más cercana y vive una experiencia de compra personalizada.</p>
+            <p class="stats-text" id="stats-text">Llevamos el confort y la elegancia de NUALA a cada rincón de
+                Venezuela. Encuentra tu boutique más cercana y vive una experiencia de compra personalizada.</p>
             <a href="#locations-scene" class="btn btn-primary" id="btn-view-locations">Explorar Tiendas</a>
         </div>
     </section>
 
     <!-- Escena 3: Ubicaciones e Información de Tiendas -->
     <section class="scene-section locations-scene" id="locations-scene">
-        <!-- Cabecera de la sección agrupada (Flex) -->
         <div class="locations-header scroll-reveal">
             <div class="locations-content">
                 <span class="locations-subtitle">Presencia Nacional</span>
                 <h2 class="locations-title">Nuestras Boutiques</h2>
-                <p class="locations-description">Visítanos y déjate asesorar por nuestros especialistas en moda íntima.
-                </p>
+                <p class="locations-description">Visítanos en cualquiera de nuestras sedes a nivel nacional. Atención al
+                    detal y al mayor.</p>
             </div>
 
-            <!-- Controles del carrusel de tiendas reubicados arriba a la derecha -->
             <div class="locations-header-controls">
                 <button class="carousel-header-btn prev" id="stores-prev" aria-label="Anterior"><i
                         class="fa-solid fa-chevron-left"></i></button>
@@ -121,16 +125,38 @@ $total_unique_visits = get_total_unique_visits();
             </div>
         </div>
 
-        <!-- Barra de Filtros Dinámicos por Estado -->
+        <!-- Buscador Instantáneo y Filtros Comerciales Rápidos -->
+        <div class="stores-discovery-toolbar scroll-reveal delay-1">
+            <div class="store-search-box">
+                <i class="fa-solid fa-magnifying-glass store-search-icon"></i>
+                <input type="search" id="store-search-input" class="store-search-input"
+                    placeholder="Buscar por ciudad, estado, sector o tienda (ej. Sabana Grande, Maracaibo, Cashea)...">
+                <button type="button" id="btn-clear-store-search" class="btn-clear-search" aria-label="Limpiar búsqueda">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="stores-quick-filters" id="stores-quick-filters">
+                <button type="button" class="quick-mode-btn active" data-quick="todos">Todas las sedes</button>
+                <button type="button" class="quick-mode-btn" data-quick="cashea"><i class="fa-solid fa-bolt"></i> Acepta Cashea</button>
+                <button type="button" class="quick-mode-btn" data-quick="detal"><i class="fa-solid fa-bag-shopping"></i> Al Detal</button>
+                <button type="button" class="quick-mode-btn" data-quick="mayor"><i class="fa-solid fa-boxes-stacked"></i> Al Mayor</button>
+            </div>
+        </div>
+
+        <!-- Barra de Filtros Dinámicos por Estado (Scroll Horizontal Fluido en Móvil) -->
         <div class="locations-filter-bar scroll-reveal delay-1" id="locations-filter-bar">
             <!-- Se inyectará dinámicamente mediante JS (View) -->
         </div>
+
+        <p class="stores-results-counter" id="stores-results-counter"></p>
 
         <!-- Carrusel de Tiendas -->
         <div class="carousel-container locations-carousel scroll-reveal delay-2" id="stores-carousel">
             <div class="carousel-wrapper" id="stores-wrapper">
                 <!-- Tarjetas de tiendas renderizadas dinámicamente por JS desde SQLite3 -->
             </div>
+            <div class="carousel-indicators" id="stores-indicators"></div>
         </div>
     </section>
 
@@ -160,19 +186,18 @@ $total_unique_visits = get_total_unique_visits();
                 <ul>
                     <li><a href="#stats-scene">Presencia Nacional</a></li>
                     <li><a href="#locations-scene">Boutiques</a></li>
-                    <li><a href="#locations-scene">Atención al Cliente</a></li>
+                    <li><a href="#locations-scene">Ventas al Mayor</a></li>
                 </ul>
             </div>
 
             <div class="footer-links-group footer-admin-group">
                 <h4 class="footer-title">Administración</h4>
-                <p class="footer-desc">Acceso protegido mediante PIN para gestión de contenidos.</p>
+                <p class="footer-desc">Acceso protegido mediante sesión segura y PIN encriptado.</p>
                 <button class="btn btn-outline" id="btn-open-admin"><i class="fa-solid fa-lock"></i> Gestión
                     Tienda</button>
-                <!-- Badge de Contador de Visitas Únicas -->
-                <div class="visitor-counter-widget" style="margin-top: 15px; font-size: 0.75rem; color: var(--color-text-muted);">
-                    <i class="fa-solid fa-eye" style="color: var(--color-primary);"></i> Visitas Únicas: 
-                    <strong id="visitor-counter-number" class="visitor-counter-val" style="color: var(--color-text-main);"><?php echo number_format($total_unique_visits, 0, ',', '.'); ?></strong>
+                <div class="visitor-counter-widget">
+                    <i class="fa-solid fa-eye"></i> Visitas Únicas:
+                    <strong id="visitor-counter-number" class="visitor-counter-val"><?php echo number_format($total_unique_visits, 0, ',', '.'); ?></strong>
                 </div>
             </div>
         </div>
@@ -184,16 +209,16 @@ $total_unique_visits = get_total_unique_visits();
 
     <!-- Ventana Modal de Acceso por PIN -->
     <div class="modal-overlay" id="admin-pin-modal">
-        <div class="modal-container pin-modal-box">
+        <div class="modal-card pin-modal-card">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-shield-halved"></i> Acceso Administrativo</h2>
-                <button class="modal-close" id="btn-close-pin" aria-label="Cerrar">&times;</button>
+                <button class="modal-close" id="btn-close-pin-modal" aria-label="Cerrar">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="form-admin-pin" class="admin-form">
-                    <p class="pin-instruction">Ingresa el PIN de 4 dígitos para acceder al gestor.</p>
+                    <p class="pin-instruction">Ingresa el PIN administrativo para iniciar sesión segura.</p>
                     <div class="form-group">
-                        <input type="password" id="admin-pin-input" maxlength="8" placeholder="****" required
+                        <input type="password" id="admin-pin-input" maxlength="16" placeholder="****" required
                             autocomplete="off">
                     </div>
                     <button type="submit" class="btn btn-primary form-submit"><i
@@ -203,13 +228,18 @@ $total_unique_visits = get_total_unique_visits();
         </div>
     </div>
 
-    <!-- Ventana Modal de Panel de Configuración Avanzado ("Hábil y Estricto") -->
+    <!-- Ventana Modal de Panel de Configuración Avanzado -->
     <div class="modal-overlay" id="admin-modal">
         <div class="modal-container">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-sliders"></i> Panel de Configuración Estricto</h2>
-                <span class="badge-status-sqlite"><i class="fa-database fa-solid"></i> SQLite3 Conectado</span>
-                <button class="modal-close" id="btn-close-admin" aria-label="Cerrar Panel">&times;</button>
+                <h2><i class="fa-solid fa-sliders"></i> Panel de Gestión NUALA</h2>
+                <div class="modal-header-right">
+                    <span class="badge-status-sqlite"><i class="fa-database fa-solid"></i> SQLite3 Seguro</span>
+                    <button type="button" class="btn-logout-inline" id="btn-logout-admin" title="Cerrar sesión administrativa">
+                        <i class="fa-solid fa-right-from-bracket"></i> Salir
+                    </button>
+                    <button class="modal-close" id="btn-close-admin" aria-label="Cerrar Panel">&times;</button>
+                </div>
             </div>
 
             <!-- Pestañas administrativas -->
@@ -217,9 +247,11 @@ $total_unique_visits = get_total_unique_visits();
                 <button class="tab-btn active" id="tab-btn-hero" data-tab="tab-hero"><i class="fa-solid fa-font"></i>
                     General / Hero</button>
                 <button class="tab-btn" id="tab-btn-products" data-tab="tab-products"><i class="fa-solid fa-images"></i>
-                    Carrusel Principal</button>
+                    Carrusel Prendas</button>
                 <button class="tab-btn" id="tab-btn-stores" data-tab="tab-stores"><i class="fa-solid fa-store"></i>
-                    Tiendas y Direcciones</button>
+                    Tiendas (<span id="admin-stores-count-badge">30</span>)</button>
+                <button class="tab-btn" id="tab-btn-audit" data-tab="tab-audit"><i class="fa-solid fa-clipboard-check"></i>
+                    Auditoría & Analítica</button>
             </div>
 
             <div class="modal-body">
@@ -230,17 +262,17 @@ $total_unique_visits = get_total_unique_visits();
                         <form id="form-edit-hero" class="admin-form">
                             <h4 class="admin-section-subtitle"><i class="fa-solid fa-star"></i> Hero Principal</h4>
                             <div class="form-group">
-                                <label for="hero-title-input">Título Principal (id: hero-title)</label>
+                                <label for="hero-title-input">Título Principal</label>
                                 <input type="text" id="hero-title-input" required
                                     placeholder="Ej. El arte de la intimidad">
                             </div>
                             <div class="form-group">
-                                <label for="hero-subtitle-input">Subtítulo (id: hero-subtitle)</label>
+                                <label for="hero-subtitle-input">Subtítulo</label>
                                 <input type="text" id="hero-subtitle-input" required
                                     placeholder="Ej. Colección Exclusiva">
                             </div>
                             <div class="form-group">
-                                <label for="hero-description-input">Descripción Corta (id: hero-description)</label>
+                                <label for="hero-description-input">Descripción Corta</label>
                                 <textarea id="hero-description-input" rows="3" required
                                     placeholder="Ej. Siluetas delicadas diseñadas para abrazar tu esencia..."></textarea>
                             </div>
@@ -262,18 +294,18 @@ $total_unique_visits = get_total_unique_visits();
                                 </div>
                             </div>
 
-                            <div class="form-label-with-toggle" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--color-border);">
-                                <h4 class="admin-section-subtitle" style="margin: 0;"><i class="fa-solid fa-location-dot"></i> Sección 'Cerca de ti' (Expansión Nacional)</h4>
-                                <label class="toggle-checkbox-label" title="Mostrar u ocultar la sección completa en la página">
+                            <div class="form-label-with-toggle admin-section-divider">
+                                <h4 class="admin-section-subtitle"><i class="fa-solid fa-location-dot"></i> Sección 'Cerca de ti' (Expansión Nacional)</h4>
+                                <label class="toggle-checkbox-label">
                                     <input type="checkbox" id="stats-section-active" checked>
                                     <span>Mostrar Sección</span>
                                 </label>
                             </div>
-                            
+
                             <div class="form-group">
                                 <div class="form-label-with-toggle">
                                     <label>Imagen de Fondo de la Sección</label>
-                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar la foto de fondo">
+                                    <label class="toggle-checkbox-label">
                                         <input type="checkbox" id="stats-bg-active" checked>
                                         <span>Mostrar Fondo</span>
                                     </label>
@@ -293,50 +325,47 @@ $total_unique_visits = get_total_unique_visits();
                             <div class="image-preview-container">
                                 <p>Vista previa del fondo:</p>
                                 <img id="stats-bg-preview" src="assets/images/tienda-nuala.jpg"
-                                    alt="Vista previa fondo" style="max-height: 140px; object-fit: cover;">
+                                    alt="Vista previa fondo" class="stats-preview-thumb">
                             </div>
 
                             <div class="form-group-row">
                                 <div class="form-group">
                                     <div class="form-label-with-toggle">
                                         <label for="stats-tagline-input">Subtítulo / Etiqueta</label>
-                                        <label class="toggle-checkbox-label" title="Mostrar u ocultar la etiqueta superior">
+                                        <label class="toggle-checkbox-label">
                                             <input type="checkbox" id="stats-tagline-active" checked>
                                             <span>Mostrar</span>
                                         </label>
                                     </div>
-                                    <input type="text" id="stats-tagline-input"
-                                        placeholder="Ej. Cerca de ti">
+                                    <input type="text" id="stats-tagline-input" placeholder="Ej. Cerca de ti">
                                 </div>
                                 <div class="form-group">
                                     <div class="form-label-with-toggle">
                                         <label for="stats-number-input">Número / Destacado</label>
-                                        <label class="toggle-checkbox-label" title="Mostrar u ocultar el número destacado">
+                                        <label class="toggle-checkbox-label">
                                             <input type="checkbox" id="stats-number-active" checked>
                                             <span>Mostrar</span>
                                         </label>
                                     </div>
-                                    <input type="text" id="stats-number-input"
-                                        placeholder="Ej. +30">
+                                    <input type="text" id="stats-number-input" placeholder="Ej. +30">
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <div class="form-label-with-toggle">
                                     <label for="stats-heading-input">Título Principal de la Sección</label>
-                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar el título principal">
+                                    <label class="toggle-checkbox-label">
                                         <input type="checkbox" id="stats-heading-active" checked>
                                         <span>Mostrar Título</span>
                                     </label>
                                 </div>
-                                <input type="text" id="stats-heading-input"
-                                    placeholder="Ej. Tiendas en todo el país">
+                                <input type="text" id="stats-heading-input" placeholder="Ej. Tiendas en todo el país">
                             </div>
 
                             <div class="form-group">
                                 <div class="form-label-with-toggle">
                                     <label for="stats-text-input">Descripción Detallada</label>
-                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar el texto descriptivo">
+                                    <label class="toggle-checkbox-label">
                                         <input type="checkbox" id="stats-description-active" checked>
                                         <span>Mostrar Descripción</span>
                                     </label>
@@ -348,20 +377,19 @@ $total_unique_visits = get_total_unique_visits();
                             <div class="form-group">
                                 <div class="form-label-with-toggle">
                                     <label for="stats-button-input">Texto del Botón</label>
-                                    <label class="toggle-checkbox-label" title="Mostrar u ocultar el botón de acción">
+                                    <label class="toggle-checkbox-label">
                                         <input type="checkbox" id="stats-button-active" checked>
                                         <span>Mostrar Botón</span>
                                     </label>
                                 </div>
-                                <input type="text" id="stats-button-input"
-                                    placeholder="Ej. Explorar Tiendas">
+                                <input type="text" id="stats-button-input" placeholder="Ej. Explorar Tiendas">
                             </div>
 
-                            <h4 class="admin-section-subtitle" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--color-border);"><i class="fa-solid fa-shield-halved"></i> Seguridad</h4>
+                            <h4 class="admin-section-subtitle admin-section-divider"><i class="fa-solid fa-shield-halved"></i> Seguridad (PIN Encriptado)</h4>
                             <div class="form-group">
                                 <label for="admin-pin-change-input">Cambiar PIN de Acceso</label>
-                                <input type="password" id="admin-pin-change-input"
-                                    placeholder="Ingresa nuevo PIN para cambiarlo (opcional)">
+                                <input type="password" id="admin-pin-change-input" autocomplete="new-password"
+                                    placeholder="Ingresa nuevo PIN de 4+ dígitos para actualizarlo (opcional)">
                             </div>
                             <button type="submit" class="btn btn-primary form-submit"><i
                                     class="fa-solid fa-floppy-disk"></i> Guardar Configuración General</button>
@@ -369,27 +397,36 @@ $total_unique_visits = get_total_unique_visits();
                     </div>
                 </div>
 
-                <!-- Pestaña 2: Gestión de Carrusel de Productos e Imágenes -->
+                <!-- Pestaña 2: Gestión de Carrusel de Productos (Con Unidad Docena / Unidad) -->
                 <div class="tab-content" id="tab-products">
                     <div class="admin-grid">
                         <div class="admin-form-container">
-                            <h3>Añadir Nueva Diapositiva</h3>
+                            <h3>Añadir Nueva Prenda</h3>
                             <form id="form-add-product" class="admin-form">
                                 <div class="form-group">
                                     <label for="product-name">Nombre de la Prenda</label>
                                     <input type="text" id="product-name" required
                                         placeholder="Ej. Body de Encaje Satinado">
                                 </div>
-                                <div class="form-group">
-                                    <label for="product-category">Categoría</label>
-                                    <select id="product-category" required>
-                                        <option value="Dama">Dama</option>
-                                        <option value="Caballero">Caballero</option>
-                                    </select>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label for="product-category">Categoría</label>
+                                        <select id="product-category" required>
+                                            <option value="Dama">Dama</option>
+                                            <option value="Caballero">Caballero</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product-unit">Presentación (Docena / Unidad)</label>
+                                        <select id="product-unit" required>
+                                            <option value="Docena" selected>Por Docena (Preferido)</option>
+                                            <option value="Unidad">Por Unidad</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="product-price">Precio</label>
-                                    <input type="text" id="product-price" required placeholder="Ej. $49.99">
+                                    <label for="product-price">Precio Referencial</label>
+                                    <input type="text" id="product-price" required placeholder="Ej. $45.00">
                                 </div>
                                 <div class="form-group">
                                     <label for="product-description">Breve Descripción</label>
@@ -420,65 +457,115 @@ $total_unique_visits = get_total_unique_visits();
                             </form>
                         </div>
                         <div class="admin-list-container">
-                            <h3>Diapositivas del Carrusel Registradas</h3>
+                            <h3>Prendas Registradas (Docena / Unidad)</h3>
                             <div class="admin-items-list" id="admin-products-list"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pestaña 3: Gestión de Tiendas, Direcciones e Imágenes -->
+                <!-- Pestaña 3: Gestión de Tiendas, Redes, Maps, Cashea y Modalidad -->
                 <div class="tab-content" id="tab-stores">
                     <div class="admin-grid">
                         <div class="admin-form-container">
                             <h3>Agregar Nueva Tienda</h3>
                             <form id="form-add-store" class="admin-form">
-                                <div class="form-group">
+                                <div class="form-label-with-toggle">
                                     <label for="store-name">Nombre de Tienda</label>
-                                    <input type="text" id="store-name" required placeholder="Ej. NUALA Chacao">
+                                    <label class="toggle-checkbox-label" title="Publicar u ocultar temporalmente la tienda">
+                                        <input type="checkbox" id="store-active" checked>
+                                        <span>Publicada</span>
+                                    </label>
                                 </div>
                                 <div class="form-group">
-                                    <label for="store-city">Ciudad</label>
-                                    <input type="text" id="store-city" required placeholder="Ej. Caracas">
+                                    <input type="text" id="store-name" required placeholder="Ej. Nuala Sabana Grande">
                                 </div>
-                                <div class="form-group">
-                                    <label for="store-state">Estado (Región)</label>
-                                    <input type="text" id="store-state" required
-                                        placeholder="Ej. Distrito Capital o Zulia">
+
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label for="store-city">Ciudad</label>
+                                        <input type="text" id="store-city" required placeholder="Ej. Caracas">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="store-state">Estado (Región)</label>
+                                        <input type="text" id="store-state" required placeholder="Ej. Distrito Capital">
+                                    </div>
                                 </div>
+
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label for="store-sale-type">Modalidad de Venta</label>
+                                        <select id="store-sale-type">
+                                            <option value="Detal">Detal</option>
+                                            <option value="Mayor">Mayor</option>
+                                            <option value="Mayor y Detal">Mayor y Detal</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Facilidad de Pago</label>
+                                        <label class="toggle-checkbox-label cashea-toggle-box">
+                                            <input type="checkbox" id="store-cashea-active">
+                                            <span><i class="fa-solid fa-bolt"></i> Disponible Cashea</span>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="store-address">Dirección Completa</label>
-                                    <input type="text" id="store-address" required
-                                        placeholder="Ej. Av. Francisco de Miranda...">
+                                    <textarea id="store-address" rows="2" required
+                                        placeholder="Ej. Boulevard de Sabana Grande, al lado de la Prefectura..."></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <label for="store-phone">Teléfono de Contacto</label>
-                                    <input type="text" id="store-phone" required placeholder="Ej. +58 (212) 555-4433">
-                                </div>
+
                                 <div class="form-group">
                                     <div class="form-label-with-toggle">
-                                        <label for="store-whatsapp"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp de la Tienda</label>
-                                        <label class="toggle-checkbox-label" title="Activar o desactivar botón de WhatsApp en la ficha">
+                                        <label for="store-whatsapp"><i class="fa-brands fa-whatsapp icon-wa"></i> WhatsApp en Tienda</label>
+                                        <label class="toggle-checkbox-label">
                                             <input type="checkbox" id="store-whatsapp-active" checked>
-                                            <span>Mostrar Botón</span>
+                                            <span>Mostrar</span>
                                         </label>
                                     </div>
-                                    <input type="text" id="store-whatsapp" placeholder="Ej. 04121234567 o +58 412 1234567">
+                                    <input type="text" id="store-whatsapp" placeholder="Ej. 04142855982">
                                 </div>
+
                                 <div class="form-group">
                                     <div class="form-label-with-toggle">
-                                        <label for="store-instagram"><i class="fa-brands fa-instagram" style="color: #E1306C;"></i> Instagram de la Tienda</label>
-                                        <label class="toggle-checkbox-label" title="Activar o desactivar botón de Instagram en la ficha">
-                                            <input type="checkbox" id="store-instagram-active" checked>
-                                            <span>Mostrar Botón</span>
+                                        <label for="store-maps-url"><i class="fa-solid fa-location-dot icon-maps"></i> Link de Google Maps</label>
+                                        <label class="toggle-checkbox-label">
+                                            <input type="checkbox" id="store-maps-active" checked>
+                                            <span>Mostrar</span>
                                         </label>
                                     </div>
-                                    <input type="text" id="store-instagram" placeholder="Ej. @nualaboutique o nualaboutique">
+                                    <input type="url" id="store-maps-url" placeholder="https://maps.app.goo.gl/...">
                                 </div>
+
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <div class="form-label-with-toggle">
+                                            <label for="store-instagram"><i class="fa-brands fa-instagram icon-ig"></i> Instagram</label>
+                                            <label class="toggle-checkbox-label">
+                                                <input type="checkbox" id="store-instagram-active" checked>
+                                                <span>Activo</span>
+                                            </label>
+                                        </div>
+                                        <input type="text" id="store-instagram" placeholder="@nuala.sabanagrande">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-label-with-toggle">
+                                            <label for="store-tiktok"><i class="fa-brands fa-tiktok"></i> TikTok</label>
+                                            <label class="toggle-checkbox-label">
+                                                <input type="checkbox" id="store-tiktok-active" checked>
+                                                <span>Activo</span>
+                                            </label>
+                                        </div>
+                                        <input type="text" id="store-tiktok" placeholder="@nualasabanagrande">
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
-                                    <label for="store-schedule">Horario</label>
+                                    <label for="store-schedule">Horario de Atención</label>
                                     <input type="text" id="store-schedule"
-                                        placeholder="Ej. Lunes a Sábado: 9:00 AM - 7:00 PM">
+                                        placeholder="Lunes a Sábado: 9:00 AM - 7:00 PM">
                                 </div>
+
                                 <div class="form-group">
                                     <label>Imagen Asociada a la Tienda</label>
                                     <div class="upload-options-container">
@@ -502,11 +589,30 @@ $total_unique_visits = get_total_unique_visits();
                                         class="fa-solid fa-store"></i> Guardar Tienda</button>
                             </form>
                         </div>
+
                         <div class="admin-list-container">
-                            <h3>Tiendas Físicas Registradas</h3>
+                            <div class="admin-list-header-bar">
+                                <h3>Directorio Nacional Registrado</h3>
+                                <input type="search" id="admin-store-search-input" class="admin-inline-search"
+                                    placeholder="Filtrar tienda o ciudad...">
+                            </div>
                             <div class="admin-items-list" id="admin-stores-list"></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Pestaña 4: Bitácora de Auditoría y Analítica Heatmap -->
+                <div class="tab-content" id="tab-audit">
+                    <div class="admin-audit-header">
+                        <div>
+                            <h3>Bitácora de Auditoría y Seguridad</h3>
+                            <p class="admin-item-sub">Registro automático de accesos, cambios de estatus y operaciones transaccionales.</p>
+                        </div>
+                        <a href="admin/dashboard.php" target="_blank" class="btn btn-secondary btn-compact-link">
+                            <i class="fa-solid fa-fire"></i> Abrir Dashboard Heatmap
+                        </a>
+                    </div>
+                    <div class="admin-audit-list" id="admin-audit-list"></div>
                 </div>
             </div>
         </div>
@@ -526,12 +632,21 @@ $total_unique_visits = get_total_unique_visits();
                         <label for="edit-product-name">Nombre de la Prenda</label>
                         <input type="text" id="edit-product-name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-product-category">Categoría</label>
-                        <select id="edit-product-category" required>
-                            <option value="Dama">Dama</option>
-                            <option value="Caballero">Caballero</option>
-                        </select>
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="edit-product-category">Categoría</label>
+                            <select id="edit-product-category" required>
+                                <option value="Dama">Dama</option>
+                                <option value="Caballero">Caballero</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-product-unit">Presentación (Docena / Unidad)</label>
+                            <select id="edit-product-unit" required>
+                                <option value="Docena">Por Docena</option>
+                                <option value="Unidad">Por Unidad</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="edit-product-price">Precio</label>
@@ -562,60 +677,111 @@ $total_unique_visits = get_total_unique_visits();
         </div>
     </div>
 
-    <!-- Modal Secundario: Editar Tienda, Dirección e Imagen -->
+    <!-- Modal Secundario: Editar Tienda, Dirección y Canales -->
     <div class="modal-overlay" id="edit-store-modal">
         <div class="modal-card">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-pen-to-square"></i> Editar Tienda y Dirección</h2>
+                <h2><i class="fa-solid fa-pen-to-square"></i> Editar Tienda y Canales</h2>
                 <button class="modal-close" id="btn-close-edit-store" aria-label="Cerrar">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="form-edit-store" class="admin-form">
                     <input type="hidden" id="edit-store-id">
-                    <div class="form-group">
+                    <div class="form-label-with-toggle">
                         <label for="edit-store-name">Nombre de Tienda</label>
+                        <label class="toggle-checkbox-label">
+                            <input type="checkbox" id="edit-store-active" checked>
+                            <span>Publicada en Sitio</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
                         <input type="text" id="edit-store-name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-store-city">Ciudad</label>
-                        <input type="text" id="edit-store-city" required>
+
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="edit-store-city">Ciudad</label>
+                            <input type="text" id="edit-store-city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-store-state">Estado (Región)</label>
+                            <input type="text" id="edit-store-state" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-store-state">Estado (Región)</label>
-                        <input type="text" id="edit-store-state" required>
+
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label for="edit-store-sale-type">Modalidad de Venta</label>
+                            <select id="edit-store-sale-type">
+                                <option value="Detal">Detal</option>
+                                <option value="Mayor">Mayor</option>
+                                <option value="Mayor y Detal">Mayor y Detal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Facilidad de Pago</label>
+                            <label class="toggle-checkbox-label cashea-toggle-box">
+                                <input type="checkbox" id="edit-store-cashea-active">
+                                <span><i class="fa-solid fa-bolt"></i> Disponible Cashea</span>
+                            </label>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="edit-store-address">Dirección Completa</label>
                         <textarea id="edit-store-address" rows="3" required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-store-phone">Teléfono de Contacto</label>
-                        <input type="text" id="edit-store-phone" required>
-                    </div>
+
                     <div class="form-group">
                         <div class="form-label-with-toggle">
-                            <label for="edit-store-whatsapp"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp de la Tienda</label>
-                            <label class="toggle-checkbox-label" title="Activar o desactivar botón de WhatsApp en la ficha">
+                            <label for="edit-store-whatsapp"><i class="fa-brands fa-whatsapp icon-wa"></i> WhatsApp de la Tienda</label>
+                            <label class="toggle-checkbox-label">
                                 <input type="checkbox" id="edit-store-whatsapp-active" checked>
                                 <span>Mostrar Botón</span>
                             </label>
                         </div>
-                        <input type="text" id="edit-store-whatsapp" placeholder="Ej. 04121234567 o +58 412 1234567">
+                        <input type="text" id="edit-store-whatsapp" placeholder="Ej. 04149021586">
                     </div>
+
                     <div class="form-group">
                         <div class="form-label-with-toggle">
-                            <label for="edit-store-instagram"><i class="fa-brands fa-instagram" style="color: #E1306C;"></i> Instagram de la Tienda</label>
-                            <label class="toggle-checkbox-label" title="Activar o desactivar botón de Instagram en la ficha">
-                                <input type="checkbox" id="edit-store-instagram-active" checked>
+                            <label for="edit-store-maps-url"><i class="fa-solid fa-location-dot icon-maps"></i> Link de Google Maps</label>
+                            <label class="toggle-checkbox-label">
+                                <input type="checkbox" id="edit-store-maps-active" checked>
                                 <span>Mostrar Botón</span>
                             </label>
                         </div>
-                        <input type="text" id="edit-store-instagram" placeholder="Ej. @nualaboutique o nualaboutique">
+                        <input type="url" id="edit-store-maps-url" placeholder="https://maps.app.goo.gl/...">
                     </div>
+
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <div class="form-label-with-toggle">
+                                <label for="edit-store-instagram"><i class="fa-brands fa-instagram icon-ig"></i> Instagram</label>
+                                <label class="toggle-checkbox-label">
+                                    <input type="checkbox" id="edit-store-instagram-active" checked>
+                                    <span>Mostrar</span>
+                                </label>
+                            </div>
+                            <input type="text" id="edit-store-instagram" placeholder="@nuala.tienda">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-with-toggle">
+                                <label for="edit-store-tiktok"><i class="fa-brands fa-tiktok"></i> TikTok</label>
+                                <label class="toggle-checkbox-label">
+                                    <input type="checkbox" id="edit-store-tiktok-active" checked>
+                                    <span>Mostrar</span>
+                                </label>
+                            </div>
+                            <input type="text" id="edit-store-tiktok" placeholder="@nuala.tienda">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="edit-store-schedule">Horario</label>
                         <input type="text" id="edit-store-schedule">
                     </div>
+
                     <div class="form-group">
                         <label>Imagen Asociada a la Tienda</label>
                         <div class="upload-options-container">
@@ -631,7 +797,7 @@ $total_unique_visits = get_total_unique_visits();
                         <img id="edit-store-preview" src="" alt="Vista previa tienda">
                     </div>
                     <button type="submit" class="btn btn-primary form-submit"><i class="fa-solid fa-check"></i>
-                        Actualizar Tienda y Dirección</button>
+                        Actualizar Tienda y Canales</button>
                 </form>
             </div>
         </div>

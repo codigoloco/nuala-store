@@ -7,8 +7,19 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/db_config.php';
+require_once __DIR__ . '/../api/helpers/SecurityHelper.php';
 
 header('Content-Type: application/json; charset=utf-8');
+
+if (!is_admin_authenticated()) {
+    http_response_code(401);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Acceso restringido a administradores autenticados.',
+        'data' => []
+    ]);
+    exit;
+}
 
 $filter_url = isset($_GET['page_url']) ? strtolower(trim((string)$_GET['page_url'])) : null;
 $db_conn = get_db_connection();

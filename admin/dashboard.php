@@ -7,8 +7,40 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../analitica/contador.php';
+require_once __DIR__ . '/../api/helpers/SecurityHelper.php';
+require_once __DIR__ . '/../api/models/ConfigModel.php';
 
-$total_visits_count = get_total_unique_visits();
+init_secure_session();
+
+$dashboard_login_error = '';
+if (isset($_POST['dashboard_logout'])) {
+    registrar_auditoria('LOGOUT_DASHBOARD', 'seguridad', 'dashboard_heatmap', null, null, 'EXITOSO');
+    revoke_admin_session();
+    header('Location: dashboard.php');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dashboard_pin'])) {
+    $rate_check = check_pin_rate_limit();
+    if (!$rate_check['allowed']) {
+        $dashboard_login_error = 'Demasiados intentos. Intenta nuevamente en unos minutos.';
+    } else {
+        $cfg_model = new ConfigModel();
+        if ($cfg_model->verify_pin((string) $_POST['dashboard_pin'])) {
+            grant_admin_session();
+            registrar_auditoria('LOGIN_DASHBOARD', 'seguridad', 'dashboard_heatmap', null, ['acceso' => 'concedido'], 'EXITOSO');
+            header('Location: dashboard.php');
+            exit;
+        } else {
+            record_failed_pin_attempt();
+            registrar_auditoria('LOGIN_DASHBOARD_FALLIDO', 'seguridad', 'dashboard_heatmap', null, ['acceso' => 'denegado'], 'DENEGADO');
+            $dashboard_login_error = 'PIN de seguridad incorrecto.';
+        }
+    }
+}
+
+$is_dashboard_auth = is_admin_authenticated();
+$total_visits_count = $is_dashboard_auth ? get_total_unique_visits() : 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -94,6 +126,46 @@ $total_visits_count = get_total_unique_visits();
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        .dashboard-pin-wrapper {
+            max-width: 420px;
+            margin: 80px auto;
+            background: var(--color-surface);
+            padding: 36px 32px;
+            border-radius: 18px;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-card);
+            text-align: center;
+        }
+
+        .dashboard-pin-wrapper h2 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-pin-wrapper p {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 20px;
+        }
+
+        .dashboard-pin-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 14px;
+            outline: none;
+        }
+
+        .dashboard-pin-error {
+            color: #d93025;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
         }
 
         .btn-view-site {
@@ -341,9 +413,33 @@ $total_visits_count = get_total_unique_visits();
             <a href="../index.php" target="_blank" class="btn-view-site">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Sitio Web
             </a>
+            <?php if ($is_dashboard_auth): ?>
+            <form method="post" style="display:inline;">
+                <button type="submit" name="dashboard_logout" value="1" class="btn-action secondary">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </button>
+            </form>
+            <?php endif; ?>
         </div>
     </header>
 
+    <?php if (!$is_dashboard_auth): ?>
+    <main class="dashboard-container">
+        <div class="dashboard-pin-wrapper">
+            <h2><i class="fa-solid fa-shield-halved" style="color: var(--color-primary-dark);"></i> Acceso Restringido</h2>
+            <p>Ingresa el PIN administrativo para visualizar métricas y mapas de calor.</p>
+            <?php if ($dashboard_login_error !== ''): ?>
+                <div class="dashboard-pin-error"><?php echo htmlspecialchars($dashboard_login_error, ENT_QUOTES, 'UTF-8'); ?></div>
+            <?php endif; ?>
+            <form method="post" autocomplete="off">
+                <input type="password" name="dashboard_pin" class="dashboard-pin-input" maxlength="12" placeholder="****" required autofocus>
+                <button type="submit" class="btn-action" style="width: 100%; justify-content: center; padding: 12px;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Desbloquear Dashboard
+                </button>
+            </form>
+        </div>
+    </main>
+    <?php else: ?>
     <!-- Contenedor Principal -->
     <main class="dashboard-container">
 
@@ -432,5 +528,6 @@ $total_visits_count = get_total_unique_visits();
     
     <!-- Script de Control del Heatmap Admin -->
     <script src="../js/admin_heatmap.js"></script>
+    <?php endif; ?>
 </body>
 </html>
